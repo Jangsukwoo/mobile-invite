@@ -7,7 +7,7 @@ import { invite } from "@/data/invite";
 const fallbackSite = {
   title: "모바일 청첩장",
   description: "",
-  url: "http://localhost:3000",
+  url: "https://seokwooj.github.io/mobile-invite/",
 };
 
 export default function Share() {
