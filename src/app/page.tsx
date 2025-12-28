@@ -6,6 +6,7 @@ import Location from "@/components/Location";
 import Contact from "@/components/Contact";
 import Account from "@/components/Account";
 import Share from "@/components/Share";
+import Guestbook from "@/components/Guestbook";
 
 export default function Home() {
   return (
