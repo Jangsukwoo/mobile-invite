@@ -54,5 +54,5 @@ export const invite = {
 그 시작의 순간을 함께하고 싶습니다.
 `,
 
-  gallery: ["images/1.jpg", "images/2.jpg", "images/3.jpg"],
+  gallery: ["images/1.jpg"],
 };
