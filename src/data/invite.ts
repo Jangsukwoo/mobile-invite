@@ -36,6 +36,14 @@ export const invite = {
       items: [{ bank: "우리은행", number: "1002-123-456789", holder: "주영" }],
     },
   ],
+  site: {
+    title: "석우 ♥ 주영 모바일 청첩장",
+    description: "소중한 분들을 초대합니다. 2026년 4월 11일 오후 5시",
+    // 배포 후 실제 주소로 바꿀 것 (GitHub Pages 주소)
+    url: "https://Jangsukwoo.github.io/mobile-invite/",
+    // public/og.png 파일을 만들 거라서 이렇게 둠
+    ogImage: "/og.png",
+  },
 
   message: `
 서로 다른 길을 걸어온 두 사람이
@@ -46,5 +54,5 @@ export const invite = {
 그 시작의 순간을 함께하고 싶습니다.
 `,
 
-  gallery: ["/images/1.jpg", "/images/2.jpg", "/images/3.jpg"],
+  gallery: ["images/1.jpg", "images/2.jpg", "images/3.jpg"],
 };
