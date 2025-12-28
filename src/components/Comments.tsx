@@ -15,7 +15,7 @@ export default function Comments() {
     script.setAttribute("data-giscus", "true");
 
     // ✅ 너가 준 값 그대로 적용
-    script.setAttribute("data-repo", "Jangsukwoo/mobile-invite");
+    script.setAttribute("data-repo", "SeokwooJ/mobile-invite");
     script.setAttribute("data-repo-id", "R_kgDOQwDfJA");
     script.setAttribute("data-category", "General");
     script.setAttribute("data-category-id", "DIC_kwDOQwDfJM4C0T9d");

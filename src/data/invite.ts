@@ -2,9 +2,9 @@ export const invite = {
   groom: "석우",
   bride: "주영",
 
-  date: "2026년 4월 11일 토요일",
+  date: "2026년 3월 28일 토요일",
   time: "오후 5시",
-  venue: "○○ 웨딩홀 3층 그랜드홀",
+  venue: "",
 
   location: {
     address: "서울특별시 강남구 언주로 517 지하 1층",
@@ -38,9 +38,9 @@ export const invite = {
   ],
   site: {
     title: "석우 ♥ 주영 모바일 청첩장",
-    description: "소중한 분들을 초대합니다. 2026년 4월 11일 오후 5시",
+    description: "소중한 분들을 초대합니다. 2025년 3월 28일 오후 5시",
     // 배포 후 실제 주소로 바꿀 것 (GitHub Pages 주소)
-    url: "https://Jangsukwoo.github.io/mobile-invite/",
+    url: "https://SeokwooJ.github.io/mobile-invite/",
     // public/og.png 파일을 만들 거라서 이렇게 둠
     ogImage: "/og.png",
   },
