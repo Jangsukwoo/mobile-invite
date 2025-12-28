@@ -5,7 +5,7 @@ import Section from "./Section";
 
 export default function Comments() {
   useEffect(() => {
-    // 이미 스크립트가 있으면 중복 로드 방지
+    // 중복 로드 방지
     if (document.querySelector('script[data-giscus="true"]')) return;
 
     const script = document.createElement("script");
@@ -14,30 +14,32 @@ export default function Comments() {
     script.crossOrigin = "anonymous";
     script.setAttribute("data-giscus", "true");
 
-    // ✅ 여기 4개는 giscus 설정 페이지에서 발급받은 값으로 교체해야 함
+    // ✅ 너가 준 값 그대로 적용
     script.setAttribute("data-repo", "Jangsukwoo/mobile-invite");
-    script.setAttribute("data-repo-id", "REPO_ID_HERE");
+    script.setAttribute("data-repo-id", "R_kgDOQwDfJA");
     script.setAttribute("data-category", "General");
-    script.setAttribute("data-category-id", "CATEGORY_ID_HERE");
+    script.setAttribute("data-category-id", "DIC_kwDOQwDfJM4C0T9d");
 
     script.setAttribute("data-mapping", "pathname");
     script.setAttribute("data-strict", "0");
     script.setAttribute("data-reactions-enabled", "1");
     script.setAttribute("data-emit-metadata", "0");
-    script.setAttribute("data-input-position", "top");
-    script.setAttribute("data-theme", "light");
+    script.setAttribute("data-input-position", "bottom");
+    script.setAttribute("data-theme", "preferred_color_scheme");
     script.setAttribute("data-lang", "ko");
     script.setAttribute("data-loading", "lazy");
 
-    document.body.appendChild(script);
+    // giscus는 이 div를 찾아 렌더링함
+    const container = document.querySelector(".giscus");
+    if (container) container.appendChild(script);
   }, []);
 
   return (
     <Section>
       <h2 className="text-lg font-semibold text-center mb-6">축하 메시지</h2>
       <div className="giscus" />
-      <p className="text-xs text-gray-500 text-center mt-6">
-        * 댓글 작성은 GitHub 로그인이 필요할 수 있어요.
+      <p className="text-xs text-gray-500 text-center mt-6 leading-relaxed">
+        * 댓글 작성/반응은 GitHub 로그인이 필요할 수 있어요.
       </p>
     </Section>
   );
