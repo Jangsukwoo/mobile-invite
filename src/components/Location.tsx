@@ -1,8 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
+
+declare global {
+  interface Window {
+    kakao: any;
+  }
+}
 
 function LinkButton({ href, label }: { href: string; label: string }) {
   return (
@@ -20,23 +26,122 @@ function LinkButton({ href, label }: { href: string; label: string }) {
 export default function Location() {
   const loc = invite.location;
   const [isMounted, setIsMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<any>(null);
 
   useEffect(() => {
     setIsMounted(true);
-    // 모바일 디바이스 감지
-    const checkMobile = () => {
-      const userAgent = navigator.userAgent || navigator.vendor;
-      const mobileRegex =
-        /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
-      const isMobileDevice =
-        mobileRegex.test(userAgent.toLowerCase()) || window.innerWidth < 768;
-      setIsMobile(isMobileDevice);
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
+
+  useEffect(() => {
+    if (!isMounted || !mapContainerRef.current || !loc.latitude || !loc.longitude) {
+      return;
+    }
+
+    // 카카오맵 SDK 로드 확인 및 지도 생성
+    const loadKakaoMap = () => {
+      // 카카오맵 SDK가 이미 로드되어 있으면 바로 사용
+      if (window.kakao && window.kakao.maps) {
+        createMap();
+        return;
+      }
+
+      // SDK가 이미 로드 중이면 스크립트 추가하지 않음
+      if (document.querySelector('script[src*="dapi.kakao.com/v2/maps/sdk.js"]')) {
+        // 스크립트가 로드 중이면 로드 완료까지 대기
+        const checkKakao = setInterval(() => {
+          if (window.kakao && window.kakao.maps) {
+            clearInterval(checkKakao);
+            window.kakao.maps.load(() => {
+              createMap();
+            });
+          }
+        }, 100);
+        return;
+      }
+
+      // SDK가 없으면 직접 로드 시도
+      // 카카오맵 API 키 (환경변수에서 가져오거나 없으면 기본 사용)
+      const apiKey = process.env.NEXT_PUBLIC_KAKAO_MAP_API_KEY || "";
+      const script = document.createElement("script");
+      script.src = apiKey
+        ? `//dapi.kakao.com/v2/maps/sdk.js?appkey=${apiKey}&autoload=false`
+        : `//dapi.kakao.com/v2/maps/sdk.js?autoload=false`;
+      script.async = true;
+      script.onload = () => {
+        if (window.kakao && window.kakao.maps) {
+          window.kakao.maps.load(() => {
+            createMap();
+          });
+        } else {
+          console.warn("카카오맵 SDK를 로드할 수 없습니다. 링크로만 이동 가능합니다.");
+          setMapLoaded(false);
+        }
+      };
+      script.onerror = () => {
+        console.warn("카카오맵 SDK 로드 실패. 링크로만 이동 가능합니다.");
+        setMapLoaded(false);
+      };
+      document.head.appendChild(script);
+    };
+
+    const createMap = () => {
+      if (!mapContainerRef.current || mapRef.current) return;
+
+      try {
+        const container = mapContainerRef.current;
+        const options = {
+          center: new window.kakao.maps.LatLng(loc.latitude!, loc.longitude!),
+          level: 3,
+        };
+
+        const map = new window.kakao.maps.Map(container, options);
+        mapRef.current = map;
+
+        // 마커 생성
+        const markerPosition = new window.kakao.maps.LatLng(
+          loc.latitude!,
+          loc.longitude!
+        );
+        const marker = new window.kakao.maps.Marker({
+          position: markerPosition,
+        });
+        marker.setMap(map);
+
+        // 커스텀 오버레이로 장소명 표시
+        const overlayContent = `
+          <div style="padding:8px 12px;background:white;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.15);font-size:12px;font-weight:bold;color:#333;white-space:nowrap;">
+            ${loc.address}
+          </div>
+        `;
+
+        const customOverlay = new window.kakao.maps.CustomOverlay({
+          position: markerPosition,
+          content: overlayContent,
+          yAnchor: 2.2,
+        });
+        customOverlay.setMap(map);
+
+        setMapLoaded(true);
+      } catch (error) {
+        console.error("카카오맵 생성 실패:", error);
+        setMapLoaded(false);
+      }
+    };
+
+    // 약간의 지연 후 SDK 로드 시도
+    const timer = setTimeout(() => {
+      loadKakaoMap();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      if (mapRef.current) {
+        mapRef.current = null;
+      }
+    };
+  }, [isMounted, loc.latitude, loc.longitude, loc.address]);
 
   // 네이버지도 링크용 URL
   const naverMapLinkUrl =
@@ -46,9 +151,9 @@ export default function Location() {
   // 카카오맵 Embed URL (좌표 기반)
   const kakaoMapEmbedUrl =
     loc.latitude && loc.longitude
-      ? `https://map.kakao.com/link/map/${encodeURIComponent(
-          loc.address
-        )},${loc.latitude},${loc.longitude}`
+      ? `https://map.kakao.com/link/map/${encodeURIComponent(loc.address)},${
+          loc.latitude
+        },${loc.longitude}`
       : null;
 
   return (
@@ -93,29 +198,70 @@ export default function Location() {
               </div>
             </a>
 
-            {/* 카카오맵 링크 (클릭 가능한 카드) - 지도 미리보기 대신 링크 제공 */}
-            {kakaoMapEmbedUrl && (
-              <a
-                href={kakaoMapEmbedUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="block rounded-xl overflow-hidden border-2 border-[#FEE500] shadow-md bg-white relative hover:shadow-lg transition-all group"
-              >
-                <div className="w-full h-[160px] bg-[linear-gradient(to_bottom_right,#FEE500,#FDD835)] flex items-center justify-center relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22 fill=%22%23000%22/%3E%3C/svg%3E')]"></div>
-                  <div className="relative text-center z-10 px-4">
-                    <div className="text-black text-xl font-bold mb-1">
-                      카카오맵
+            {/* 카카오맵 지도 미리보기 */}
+            {loc.latitude && loc.longitude ? (
+              <div className="space-y-2">
+                <div
+                  ref={mapContainerRef}
+                  className="rounded-xl overflow-hidden border-2 border-[#FEE500] shadow-md bg-[#f5f5f5] relative"
+                  style={{ width: "100%", height: "400px", minHeight: "400px" }}
+                >
+                  {!mapLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#f5f5f5]">
+                      <div className="text-center">
+                        <div className="text-[#8b7a6a] text-sm mb-2">
+                          지도를 불러오는 중...
+                        </div>
+                        {kakaoMapEmbedUrl && (
+                          <a
+                            href={kakaoMapEmbedUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-block bg-[#FEE500] text-black px-4 py-2 rounded-full text-xs font-medium hover:bg-[#FDD835] transition-colors"
+                          >
+                            카카오맵에서 보기
+                          </a>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-black/90 text-sm mb-3">
-                      {loc.address}
-                    </div>
-                    <div className="bg-black/20 backdrop-blur-sm rounded-full px-5 py-2 text-xs text-black font-medium group-hover:bg-black/30 transition-colors inline-block">
-                      클릭하여 카카오맵에서 보기 →
+                  )}
+                </div>
+                {kakaoMapEmbedUrl && (
+                  <a
+                    href={kakaoMapEmbedUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block w-full rounded-xl border-2 border-[#FEE500] bg-[#FEE500] px-4 py-3 text-sm text-center text-black hover:bg-[#FDD835] transition-colors font-medium"
+                  >
+                    카카오맵에서 자세히 보기 →
+                  </a>
+                )}
+              </div>
+            ) : (
+              // 좌표가 없을 경우 링크 카드만 표시
+              kakaoMapEmbedUrl && (
+                <a
+                  href={kakaoMapEmbedUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block rounded-xl overflow-hidden border-2 border-[#FEE500] shadow-md bg-white relative hover:shadow-lg transition-all group"
+                >
+                  <div className="w-full h-[160px] bg-[linear-gradient(to_bottom_right,#FEE500,#FDD835)] flex items-center justify-center relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22 fill=%22%23000%22/%3E%3C/svg%3E')]"></div>
+                    <div className="relative text-center z-10 px-4">
+                      <div className="text-black text-xl font-bold mb-1">
+                        카카오맵
+                      </div>
+                      <div className="text-black/90 text-sm mb-3">
+                        {loc.address}
+                      </div>
+                      <div className="bg-black/20 backdrop-blur-sm rounded-full px-5 py-2 text-xs text-black font-medium group-hover:bg-black/30 transition-colors inline-block">
+                        클릭하여 카카오맵에서 보기 →
+                      </div>
                     </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              )
             )}
           </div>
         ) : (
