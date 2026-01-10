@@ -20,26 +20,13 @@ function LinkButton({ href, label }: { href: string; label: string }) {
 export default function Location() {
   const loc = invite.location;
   const [isMounted, setIsMounted] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
-    // 모바일 감지
-    const checkMobile = () => {
-      setIsMobile(
-        window.innerWidth < 768 ||
-          /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-            navigator.userAgent
-          )
-      );
-    };
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  // Google Maps Embed URL 생성
-  const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(
+  // 구글지도 Embed URL - 네이버지도 iframe은 제한이 있어서 구글지도 사용
+  const mapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
     loc.address
   )}&output=embed&hl=ko&z=16`;
 
@@ -59,8 +46,8 @@ export default function Location() {
           <p className="text-sm text-[#8b7a6a]">{loc.address}</p>
         </div>
 
-        {/* 지도 미리보기: 모바일에서는 숨김 */}
-        {!isMobile && isMounted && (
+        {/* 지도 미리보기 - 모든 디바이스에서 표시 */}
+        {isMounted ? (
           <div
             className="rounded-xl overflow-hidden border-2 border-[#e8e3d8] shadow-md mb-6 bg-[#f5f5f5] relative"
             style={{ minHeight: "300px" }}
@@ -76,7 +63,7 @@ export default function Location() {
               allowFullScreen
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              src={mapUrl}
+              src={mapEmbedUrl}
               style={{
                 border: 0,
                 width: "100%",
@@ -85,14 +72,9 @@ export default function Location() {
               }}
             />
           </div>
-        )}
-
-        {/* 모바일에서는 안내 메시지 */}
-        {isMobile && (
-          <div className="rounded-xl border-2 border-[#e8e3d8] bg-[#faf9f6] p-6 mb-6 text-center">
-            <p className="text-sm text-[#6b5d4a] mb-3">
-              아래 버튼을 눌러 지도 앱으로 이동하세요
-            </p>
+        ) : (
+          <div className="w-full h-[400px] flex items-center justify-center text-[#8b7a6a] rounded-xl border-2 border-[#e8e3d8] bg-[#f5f5f5] mb-6">
+            지도를 불러오는 중...
           </div>
         )}
 
@@ -111,7 +93,7 @@ export default function Location() {
           <p className="mb-1">
             * 지도 버튼을 누르면 해당 앱/웹으로 이동합니다.
           </p>
-          <p>* 모바일에서는 지도가 보이지 않을 경우 위 버튼을 눌러주세요.</p>
+          <p>* 지도가 보이지 않을 경우 위 버튼을 눌러주세요.</p>
         </div>
       </div>
     </Section>
