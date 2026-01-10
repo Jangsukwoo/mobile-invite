@@ -52,9 +52,7 @@ export default function Location() {
 
       // 이미 스크립트가 로드 중이면 대기
       if (
-        document.querySelector(
-          'script[src*="maps.googleapis.com/maps/api/js"]'
-        )
+        document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')
       ) {
         const checkGoogle = setInterval(() => {
           if (window.google && window.google.maps) {
@@ -227,7 +225,8 @@ export default function Location() {
                   </div>
                   {!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && (
                     <p className="text-xs text-[#8b7a6a] mt-2">
-                      .env.local 파일에 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY를 설정해주세요.
+                      .env.local 파일에 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY를
+                      설정해주세요.
                     </p>
                   )}
                 </div>
