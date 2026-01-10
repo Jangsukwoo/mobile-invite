@@ -1,29 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import { useEffect, useState, useRef } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
-import "leaflet/dist/leaflet.css";
 
-// Leaflet은 SSR을 지원하지 않으므로 동적 import로 클라이언트에서만 로드
-const MapContainer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.MapContainer),
-  { ssr: false }
-);
-const TileLayer = dynamic(
-  () => import("react-leaflet").then((mod) => mod.TileLayer),
-  { ssr: false }
-);
-const Marker = dynamic(
-  () => import("react-leaflet").then((mod) => mod.Marker),
-  { ssr: false }
-);
-const Popup = dynamic(() => import("react-leaflet").then((mod) => mod.Popup), {
-  ssr: false,
-});
-
-// Leaflet 마커 아이콘 설정은 useEffect에서 처리
+declare global {
+  interface Window {
+    google: any;
+    initMap: () => void;
+  }
+}
 
 function LinkButton({ href, label }: { href: string; label: string }) {
   return (
@@ -41,31 +27,173 @@ function LinkButton({ href, label }: { href: string; label: string }) {
 export default function Location() {
   const loc = invite.location;
   const [isMounted, setIsMounted] = useState(false);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const mapRef = useRef<HTMLDivElement>(null);
+  const googleMapRef = useRef<any>(null);
 
   useEffect(() => {
     setIsMounted(true);
 
-    // Leaflet 마커 아이콘 설정 (Next.js에서 필요) - 더 예쁜 커스텀 마커
-    if (typeof window !== "undefined") {
-      import("leaflet").then((L) => {
-        delete (L.default.Icon.Default.prototype as any)._getIconUrl;
+    // Google Maps API 키 확인
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
-        // 더 예쁜 커스텀 마커 사용 (빨간색 핀)
-        const customIcon = L.default.icon({
-          iconUrl:
-            "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-          shadowUrl:
-            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
-          iconSize: [25, 41],
-          iconAnchor: [12, 41],
-          popupAnchor: [1, -34],
-          shadowSize: [41, 41],
+    if (!apiKey || !mapRef.current || !loc.latitude || !loc.longitude) {
+      console.warn("Google Maps API 키가 없거나 좌표가 없습니다.");
+      return;
+    }
+
+    // Google Maps API 로드 확인 및 지도 생성
+    const loadGoogleMap = () => {
+      // 이미 Google Maps API가 로드되어 있으면 바로 사용
+      if (window.google && window.google.maps) {
+        createMap();
+        return;
+      }
+
+      // 이미 스크립트가 로드 중이면 대기
+      if (
+        document.querySelector(
+          'script[src*="maps.googleapis.com/maps/api/js"]'
+        )
+      ) {
+        const checkGoogle = setInterval(() => {
+          if (window.google && window.google.maps) {
+            clearInterval(checkGoogle);
+            createMap();
+          }
+        }, 100);
+
+        setTimeout(() => {
+          clearInterval(checkGoogle);
+          if (!googleMapRef.current) {
+            console.warn("Google Maps API 로드 타임아웃");
+            setMapLoaded(false);
+          }
+        }, 5000);
+
+        return;
+      }
+
+      // Google Maps API 스크립트 로드
+      const script = document.createElement("script");
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&language=ko&region=KR&loading=async`;
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        if (window.google && window.google.maps) {
+          createMap();
+        } else {
+          console.error("Google Maps API를 로드할 수 없습니다.");
+          setMapLoaded(false);
+        }
+      };
+      script.onerror = (error) => {
+        console.error("Google Maps API 로드 실패:", error);
+        setMapLoaded(false);
+      };
+      document.head.appendChild(script);
+    };
+
+    const createMap = () => {
+      if (!mapRef.current || googleMapRef.current) return;
+
+      try {
+        const mapOptions = {
+          center: {
+            lat: loc.latitude!,
+            lng: loc.longitude!,
+          },
+          zoom: 17,
+          mapTypeId: window.google.maps.MapTypeId.ROADMAP,
+          styles: [
+            {
+              featureType: "all",
+              elementType: "geometry",
+              stylers: [{ color: "#f5f5f5" }],
+            },
+            {
+              featureType: "water",
+              elementType: "geometry",
+              stylers: [{ color: "#e8e3d8" }],
+            },
+            {
+              featureType: "road",
+              elementType: "geometry",
+              stylers: [{ color: "#ffffff" }],
+            },
+            {
+              featureType: "road",
+              elementType: "labels.text.fill",
+              stylers: [{ color: "#5a4a3a" }],
+            },
+            {
+              featureType: "poi",
+              elementType: "labels",
+              stylers: [{ visibility: "off" }],
+            },
+          ],
+          disableDefaultUI: false,
+          zoomControl: true,
+          mapTypeControl: false,
+          streetViewControl: false,
+          fullscreenControl: true,
+        };
+
+        const map = new window.google.maps.Map(mapRef.current, mapOptions);
+        googleMapRef.current = map;
+
+        // 마커 생성
+        const marker = new window.google.maps.Marker({
+          position: {
+            lat: loc.latitude!,
+            lng: loc.longitude!,
+          },
+          map: map,
+          title: loc.address,
+          animation: window.google.maps.Animation.DROP,
         });
 
-        L.default.Marker.prototype.options.icon = customIcon;
-      });
-    }
-  }, []);
+        // 정보창 생성
+        const infoWindow = new window.google.maps.InfoWindow({
+          content: `
+            <div style="padding: 8px; text-align: center;">
+              <div style="font-weight: 600; color: #5a4a3a; font-size: 14px; margin-bottom: 4px;">
+                ${invite.venue}
+              </div>
+              <div style="color: #8b7a6a; font-size: 12px;">
+                ${loc.address}
+              </div>
+            </div>
+          `,
+        });
+
+        // 마커 클릭 시 정보창 표시
+        marker.addListener("click", () => {
+          infoWindow.open(map, marker);
+        });
+
+        // 처음 로드 시 정보창 자동 표시
+        infoWindow.open(map, marker);
+
+        setMapLoaded(true);
+      } catch (error) {
+        console.error("Google Maps 생성 실패:", error);
+        setMapLoaded(false);
+      }
+    };
+
+    // 약간의 지연 후 지도 로드 시도
+    const timer = setTimeout(() => {
+      loadGoogleMap();
+    }, 100);
+
+    return () => {
+      clearTimeout(timer);
+      if (googleMapRef.current) {
+        googleMapRef.current = null;
+      }
+    };
+  }, [isMounted, loc.latitude, loc.longitude, loc.address, invite.venue]);
 
   return (
     <Section>
@@ -83,43 +211,37 @@ export default function Location() {
           <p className="text-sm text-[#8b7a6a]">{loc.address}</p>
         </div>
 
-        {/* Leaflet 지도 미리보기 - API 키 불필요, 모바일에서도 작동 */}
+        {/* Google Maps 지도 미리보기 */}
         {isMounted && loc.latitude && loc.longitude ? (
           <div
             className="rounded-xl overflow-hidden border-2 border-[#d4c4b0] shadow-lg bg-white relative mb-6"
             style={{ height: "450px", width: "100%" }}
           >
-            <MapContainer
-              center={[loc.latitude!, loc.longitude!]}
-              zoom={17}
-              style={{ height: "100%", width: "100%", zIndex: 0 }}
-              scrollWheelZoom={false}
-              className="rounded-lg"
-              zoomControl={true}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-                url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
-                subdomains="abcd"
-                maxZoom={19}
-              />
-              <Marker position={[loc.latitude!, loc.longitude!]}>
-                <Popup
-                  className="custom-popup"
-                  autoClose={false}
-                  closeOnClick={false}
-                >
-                  <div className="text-sm font-semibold text-[#5a4a3a] py-1">
-                    {invite.venue}
+            {!mapLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center bg-[#f5f5f5] z-10">
+                <div className="text-center">
+                  <div className="text-[#8b7a6a] text-sm mb-2">
+                    {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+                      ? "지도를 불러오는 중..."
+                      : "Google Maps API 키가 필요합니다."}
                   </div>
-                  <div className="text-xs text-[#8b7a6a]">{loc.address}</div>
-                </Popup>
-              </Marker>
-            </MapContainer>
+                  {!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && (
+                    <p className="text-xs text-[#8b7a6a] mt-2">
+                      .env.local 파일에 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY를 설정해주세요.
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+            <div
+              ref={mapRef}
+              style={{ height: "100%", width: "100%" }}
+              className="rounded-lg"
+            />
           </div>
         ) : (
           <div className="w-full h-[450px] flex items-center justify-center text-[#8b7a6a] rounded-xl border-2 border-[#e8e3d8] bg-[#f5f5f5] mb-6">
-            지도를 불러오는 중...
+            좌표 정보가 없습니다.
           </div>
         )}
 

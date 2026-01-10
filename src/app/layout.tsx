@@ -1,5 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Dancing_Script, Caveat, Noto_Sans_KR, Noto_Serif_KR } from "next/font/google";
+import {
+  Geist,
+  Geist_Mono,
+  Dancing_Script,
+  Caveat,
+  Noto_Sans_KR,
+  Noto_Serif_KR,
+} from "next/font/google";
 import "./globals.css";
 import { invite } from "@/data/invite";
 
