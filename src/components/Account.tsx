@@ -29,7 +29,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={onCopy}
-      className="rounded-lg border px-3 py-2 text-xs hover:bg-gray-50"
+      className="rounded-lg border-2 border-[#d4c4b0] px-3 py-2 text-xs text-[#6b5d4a] hover:bg-[#f0ede5] transition-colors font-light"
       type="button"
     >
       {copied ? "복사됨!" : "복사"}
@@ -42,57 +42,62 @@ export default function Account() {
 
   return (
     <Section>
-      <h2 className="text-lg font-semibold text-center mb-3">마음 전하실 곳</h2>
-      <p className="text-xs text-gray-500 text-center mb-8 leading-relaxed">
-        축하의 마음만으로도 충분합니다.
-        <br />
-        계좌번호는 눌러서 확인하고 복사할 수 있어요.
-      </p>
+      <div className="text-center space-y-6">
+        <h2 className="text-2xl font-light text-[#5a4a3a] tracking-wide" style={{ fontFamily: 'serif' }}>
+          마음 전하실 곳
+        </h2>
+        <div className="w-16 h-px bg-[#d4c4b0] mx-auto"></div>
+        <p className="text-xs text-[#8b7a6a] text-center mb-8 leading-relaxed">
+          축하의 마음만으로도 충분합니다.
+          <br />
+          계좌번호는 눌러서 확인하고 복사할 수 있어요.
+        </p>
 
-      <div className="space-y-3">
-        {invite.accounts.map((group) => {
-          const isOpen = openGroup === group.group;
+        <div className="space-y-3">
+          {invite.accounts.map((group) => {
+            const isOpen = openGroup === group.group;
 
-          return (
-            <div
-              key={group.group}
-              className="rounded-2xl border overflow-hidden"
-            >
-              <button
-                type="button"
-                onClick={() => setOpenGroup(isOpen ? null : group.group)}
-                className="w-full px-5 py-4 flex items-center justify-between text-sm"
+            return (
+              <div
+                key={group.group}
+                className="rounded-xl border-2 border-[#e8e3d8] overflow-hidden bg-white/50 shadow-sm"
               >
-                <span className="font-medium">{group.group}</span>
-                <span className="text-gray-500">
-                  {isOpen ? "닫기" : "열기"}
-                </span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setOpenGroup(isOpen ? null : group.group)}
+                  className="w-full px-5 py-4 flex items-center justify-between text-sm text-[#5a4a3a] hover:bg-[#f0ede5] transition-colors"
+                >
+                  <span className="font-normal">{group.group}</span>
+                  <span className="text-[#8b7a6a]">
+                    {isOpen ? "닫기" : "열기"}
+                  </span>
+                </button>
 
-              {isOpen && (
-                <div className="border-t px-5 py-4 space-y-3">
-                  {group.items.map((acc, idx) => (
-                    <div
-                      key={`${acc.number}-${idx}`}
-                      className="rounded-xl bg-gray-50 p-4 flex items-center justify-between gap-3"
-                    >
-                      <div className="min-w-0">
-                        <p className="text-xs text-gray-500">
-                          {acc.bank} · {acc.holder}
-                        </p>
-                        <p className="text-sm font-medium break-all mt-1">
-                          {acc.number}
-                        </p>
+                {isOpen && (
+                  <div className="border-t-2 border-[#e8e3d8] px-5 py-4 space-y-3 bg-white/30">
+                    {group.items.map((acc, idx) => (
+                      <div
+                        key={`${acc.number}-${idx}`}
+                        className="rounded-xl bg-[#faf9f6] border border-[#e8e3d8] p-4 flex items-center justify-between gap-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="text-xs text-[#8b7a6a]">
+                            {acc.bank} · {acc.holder}
+                          </p>
+                          <p className="text-sm font-normal break-all mt-1 text-[#5a4a3a]">
+                            {acc.number}
+                          </p>
+                        </div>
+
+                        <CopyButton text={acc.number} />
                       </div>
-
-                      <CopyButton text={acc.number} />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </Section>
   );

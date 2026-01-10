@@ -38,11 +38,11 @@ export type Invite = {
 };
 
 export const invite: Invite = {
-  groom: "장석우",
-  bride: "박주영",
+  groom: "Seokwoo",
+  bride: "Jooyoung",
   cover: {
     image: "images/cover.jpg",
-    tagline: "Invite Our Wedding",
+    tagline: "두 사람의 이야기가 열리고 있어요",
   },
 
   date: "2026년 3월 28일 토요일",
@@ -56,28 +56,27 @@ export const invite: Invite = {
   },
 
   contacts: {
-    groom: { name: "장석우", tel: "010-2005-8527" },
-    bride: { name: "박주영", tel: "010-8332-3341" },
+    groom: { name: "Seokwoo", tel: "010-2005-8527" },
+    bride: { name: "Jooyoung", tel: "010-8332-3341" },
   },
 
   accounts: [
     {
       group: "신랑측",
       items: [
-        { bank: "하나은행", number: "177-910539-09607", holder: "장석우" },
-        { bank: "테스트", number: "테스트", holder: "장석우" },
+        { bank: "하나은행", number: "177-910539-09607", holder: "Seokwoo" },
       ],
     },
     {
       group: "신부측",
       items: [
-        { bank: "카카오뱅크", number: "3333105871789", holder: "박주영" },
+        { bank: "카카오뱅크", number: "3333105871789", holder: "Jooyoung" },
       ],
     },
   ],
 
   site: {
-    title: "석우 ♥ 주영 모바일 청첩장",
+    title: "Seokwoo ♥ Jooyoung 모바일 청첩장",
     description: "소중한 분들을 초대합니다. 2026년 3월 28일 오후 5시",
     url: "https://SeokwooJ.github.io/mobile-invite/",
     ogImage: "og.png",

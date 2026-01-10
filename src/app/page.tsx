@@ -11,7 +11,7 @@ import CoverHero from "@/components/CoverHero";
 
 export default function Home() {
   return (
-    <main className="bg-white text-gray-900">
+    <main className="bg-[#faf9f6] text-[#5a4a3a] min-h-screen">
       <CoverHero />
       <Cover />
       <Greeting />

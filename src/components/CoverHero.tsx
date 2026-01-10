@@ -4,78 +4,98 @@ import FallingFlowers from "./FallingFlowers";
 export default function CoverHero() {
   const coverImage =
     invite.cover?.image ?? invite.gallery?.[0] ?? "images/cover.jpg";
-  const tagline = invite.cover?.tagline ?? "Two Become One";
+  const tagline = invite.cover?.tagline ?? "두 사람의 이야기가 열리고 있어요";
 
   return (
-    <section className="relative min-h-[100svh] w-full overflow-hidden bg-[#f4f1ec]">
-      {/* 디아망 벽지 느낌 오버레이 */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.6),rgba(0,0,0,0.05))] z-0" />
+    <section className="relative min-h-[100svh] w-full overflow-hidden bg-[#faf9f6]">
+      {/* 편지지 느낌의 배경 */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(250,249,246,0.95),rgba(240,238,230,0.98))] z-0" />
+      
+      {/* 편지지 텍스처 */}
+      <div 
+        className="absolute inset-0 opacity-[0.03] z-0"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }}
+      />
 
       {/* 꽃 흩날림 */}
       <FallingFlowers count={18} />
 
       {/* 사진 영역 */}
-      <div className="relative z-20 flex min-h-[100svh] items-center justify-center px-4">
-        <div className="relative w-full max-w-[560px]">
+      <div className="relative z-20 flex min-h-[100svh] items-center justify-center px-4 py-20">
+        <div className="relative w-full max-w-[560px] space-y-8">
+          {/* 메인 문구 - 상단 */}
+          <div className="text-center px-6">
+            <p
+              className="
+                text-[32px]
+                sm:text-[40px]
+                leading-relaxed
+                text-[#5a4a3a]
+                font-light
+                tracking-wide
+              "
+              style={{ fontFamily: 'serif' }}
+            >
+              {tagline}
+            </p>
+          </div>
+
           {/* 사진 */}
-          <img
-            src={coverImage}
-            alt="cover"
-            className="
-              w-full
-              h-auto
-              object-contain
-              rounded-[18px]
-              shadow-[0_28px_80px_rgba(0,0,0,0.25)]
-            "
-          />
-
-          {/* 사진 안 이름 (필기체 + 골드) */}
-          <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
-            <span
+          <div className="relative w-full">
+            <img
+              src={coverImage}
+              alt="cover"
               className="
-    handwrite
-    text-[22px]
-    text-[#FFF3A3]
-    drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]
-  "
-            >
-              {invite.groom}
-            </span>
+                w-full
+                h-auto
+                object-cover
+                rounded-2xl
+                shadow-[0_20px_60px_rgba(0,0,0,0.15)]
+                border-2
+                border-[#e8e3d8]
+              "
+            />
 
-            <span
-              className="
-    handwrite
-    text-[22px]
-    text-[#FFF3A3]
-    drop-shadow-[0_2px_8px_rgba(0,0,0,0.35)]
-  "
-            >
-              {invite.bride}
-            </span>
+            {/* 사진 안 이름 (우아한 필기체) */}
+            <div className="absolute bottom-6 left-6 right-6 flex justify-between pointer-events-none">
+              <span
+                className="
+                  handwrite
+                  text-[24px]
+                  sm:text-[28px]
+                  text-white
+                  drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]
+                  font-medium
+                "
+              >
+                {invite.groom}
+              </span>
+
+              <span
+                className="
+                  handwrite
+                  text-[24px]
+                  sm:text-[28px]
+                  text-white
+                  drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]
+                  font-medium
+                "
+              >
+                {invite.bride}
+              </span>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* 하단 메인 필기체 문구 */}
-      <div className="absolute bottom-20 left-0 right-0 z-30 flex justify-center px-6">
-        <div
-          className="
-    handwrite
-    text-[64px]
-    sm:text-[76px]
-    leading-none
-    text-[#FFEE6A]
-    drop-shadow-[0_6px_24px_rgba(0,0,0,0.35)]
-    text-center
-  "
-        >
-          {tagline}
+      {/* 스크롤 힌트 */}
+      <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center">
+        <div className="text-[#8b7a6a]/60 text-xs tracking-widest animate-bounce">
+          SCROLL
         </div>
       </div>
-
-      {/* 스크롤 힌트 */}
-      <div className="text-[#FFF3A3]/80 text-xs tracking-widest">SCROLL</div>
     </section>
   );
 }

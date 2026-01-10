@@ -67,24 +67,29 @@ export default function Gallery() {
 
   return (
     <Section>
-      <h2 className="text-lg font-semibold text-center mb-6">사진</h2>
+      <div className="text-center space-y-6">
+        <h2 className="text-2xl font-light text-[#5a4a3a] tracking-wide" style={{ fontFamily: 'serif' }}>
+          사진
+        </h2>
+        <div className="w-16 h-px bg-[#d4c4b0] mx-auto"></div>
 
-      {/* 썸네일 그리드 */}
-      <div className="grid grid-cols-3 gap-2">
-        {images.map((src, i) => (
-          <button
-            key={i}
-            type="button"
-            onClick={() => openViewer(i)}
-            className="aspect-square overflow-hidden rounded-lg"
-          >
-            <img
-              src={src}
-              alt={`gallery-${i}`}
-              className="w-full h-full object-cover"
-            />
-          </button>
-        ))}
+        {/* 썸네일 그리드 */}
+        <div className="grid grid-cols-3 gap-3">
+          {images.map((src, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => openViewer(i)}
+              className="aspect-square overflow-hidden rounded-xl border-2 border-[#e8e3d8] shadow-sm hover:shadow-md transition-shadow"
+            >
+              <img
+                src={src}
+                alt={`gallery-${i}`}
+                className="w-full h-full object-cover"
+              />
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* 라이트박스 */}

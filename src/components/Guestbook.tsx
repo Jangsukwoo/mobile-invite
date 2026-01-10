@@ -169,107 +169,112 @@ export default function Guestbook() {
 
   return (
     <Section>
-      <h2 className="text-lg font-semibold text-center mb-3">축하 메시지</h2>
-      <p className="text-xs text-gray-500 text-center mb-6">
-        닉네임만 입력하고 자유롭게 남겨주세요 🙂
-      </p>
+      <div className="text-center space-y-6">
+        <h2 className="text-2xl font-light text-[#5a4a3a] tracking-wide" style={{ fontFamily: 'serif' }}>
+          축하 메시지
+        </h2>
+        <div className="w-16 h-px bg-[#d4c4b0] mx-auto"></div>
+        <p className="text-xs text-[#8b7a6a] text-center mb-6">
+          닉네임만 입력하고 자유롭게 남겨주세요 🙂
+        </p>
 
-      {errorMsg && (
-        <div className="mb-4 rounded-xl border border-red-300 bg-red-50 p-3 text-xs text-red-700">
-          {errorMsg}
+        {errorMsg && (
+          <div className="mb-4 rounded-xl border-2 border-red-300 bg-red-50 p-3 text-xs text-red-700">
+            {errorMsg}
+          </div>
+        )}
+
+        {/* 작성 폼 */}
+        <div className="space-y-3">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="닉네임 (예: 철수)"
+            className="w-full rounded-xl border-2 border-[#e8e3d8] px-4 py-3 text-sm text-[#5a4a3a] bg-white/50 focus:outline-none focus:border-[#d4c4b0] font-light"
+            maxLength={20}
+          />
+
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="축하 메시지"
+            className="w-full rounded-xl border-2 border-[#e8e3d8] px-4 py-3 text-sm h-28 resize-none text-[#5a4a3a] bg-white/50 focus:outline-none focus:border-[#d4c4b0] font-light"
+            maxLength={300}
+          />
+
+          <button
+            type="button"
+            onClick={submit}
+            disabled={!ready || sending}
+            className="w-full rounded-xl bg-[#5a4a3a] text-white px-4 py-3 text-sm disabled:opacity-50 hover:bg-[#4a3d30] transition-colors font-light"
+          >
+            {sending ? "등록 중..." : ready ? "등록하기" : "연결 중..."}
+          </button>
         </div>
-      )}
 
-      {/* 작성 폼 */}
-      <div className="space-y-3">
-        <input
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="닉네임 (예: 철수)"
-          className="w-full rounded-xl border px-4 py-3 text-sm"
-          maxLength={20}
-        />
+        {/* 목록 */}
+        <div className="mt-10 space-y-3">
+          {messages.map((m) => {
+            const isMine = myUid && m.uid === myUid;
+            const isEditing = editingId === m.id;
 
-        <textarea
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-          placeholder="축하 메시지"
-          className="w-full rounded-xl border px-4 py-3 text-sm h-28 resize-none"
-          maxLength={300}
-        />
+            return (
+              <div key={m.id} className="rounded-xl border-2 border-[#e8e3d8] p-4 bg-white/50 shadow-sm">
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-normal text-[#5a4a3a]">{m.name}</p>
 
-        <button
-          type="button"
-          onClick={submit}
-          disabled={!ready || sending}
-          className="w-full rounded-xl bg-gray-900 text-white px-4 py-3 text-sm disabled:opacity-50"
-        >
-          {sending ? "등록 중..." : ready ? "등록하기" : "연결 중..."}
-        </button>
-      </div>
-
-      {/* 목록 */}
-      <div className="mt-10 space-y-3">
-        {messages.map((m) => {
-          const isMine = myUid && m.uid === myUid;
-          const isEditing = editingId === m.id;
-
-          return (
-            <div key={m.id} className="rounded-2xl border p-4">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-sm font-semibold">{m.name}</p>
-
-                {isMine && !isEditing && (
-                  <button
-                    type="button"
-                    className="text-xs text-gray-600 underline"
-                    onClick={() => {
-                      setEditingId(m.id);
-                      setEditingText(m.text);
-                    }}
-                  >
-                    수정
-                  </button>
-                )}
-              </div>
-
-              {!isEditing ? (
-                <p className="text-sm text-gray-700 mt-2 whitespace-pre-wrap">
-                  {m.text}
-                </p>
-              ) : (
-                <div className="mt-3 space-y-2">
-                  <textarea
-                    value={editingText}
-                    onChange={(e) => setEditingText(e.target.value)}
-                    className="w-full rounded-xl border px-3 py-2 text-sm h-24 resize-none"
-                    maxLength={300}
-                  />
-                  <div className="flex gap-2">
+                  {isMine && !isEditing && (
                     <button
                       type="button"
-                      className="flex-1 rounded-xl bg-gray-900 text-white py-2 text-sm disabled:opacity-50"
-                      disabled={savingEdit}
-                      onClick={() => saveEdit(m.id)}
-                    >
-                      {savingEdit ? "저장 중..." : "저장"}
-                    </button>
-                    <button
-                      type="button"
-                      className="flex-1 rounded-xl border py-2 text-sm"
+                      className="text-xs text-[#8b7a6a] underline hover:text-[#6b5d4a]"
                       onClick={() => {
-                        setEditingId(null);
-                        setEditingText("");
+                        setEditingId(m.id);
+                        setEditingText(m.text);
                       }}
                     >
-                      취소
+                      수정
                     </button>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+
+                {!isEditing ? (
+                  <p className="text-sm text-[#6b5d4a] mt-2 whitespace-pre-wrap font-light leading-relaxed">
+                    {m.text}
+                  </p>
+                ) : (
+                  <div className="mt-3 space-y-2">
+                    <textarea
+                      value={editingText}
+                      onChange={(e) => setEditingText(e.target.value)}
+                      className="w-full rounded-xl border-2 border-[#e8e3d8] px-3 py-2 text-sm h-24 resize-none text-[#5a4a3a] bg-white/50 focus:outline-none focus:border-[#d4c4b0] font-light"
+                      maxLength={300}
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        className="flex-1 rounded-xl bg-[#5a4a3a] text-white py-2 text-sm disabled:opacity-50 hover:bg-[#4a3d30] transition-colors font-light"
+                        disabled={savingEdit}
+                        onClick={() => saveEdit(m.id)}
+                      >
+                        {savingEdit ? "저장 중..." : "저장"}
+                      </button>
+                      <button
+                        type="button"
+                        className="flex-1 rounded-xl border-2 border-[#d4c4b0] text-[#6b5d4a] py-2 text-sm hover:bg-[#f0ede5] transition-colors font-light"
+                        onClick={() => {
+                          setEditingId(null);
+                          setEditingText("");
+                        }}
+                      >
+                        취소
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </Section>
   );
