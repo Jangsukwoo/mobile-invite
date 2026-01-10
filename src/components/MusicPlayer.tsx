@@ -12,66 +12,45 @@ export default function MusicPlayer() {
 
   useEffect(() => {
     // basePath 자동 감지 (GitHub Pages용)
-    if (typeof window !== "undefined" && invite.music?.url) {
-      let url = invite.music.url;
-
-      // 절대 경로가 아니면 basePath 추가
-      if (
-        url.startsWith("/") &&
-        !url.startsWith("//") &&
-        !url.startsWith("http")
-      ) {
-        // 현재 URL에서 basePath 추출
-        const hostname = window.location.hostname;
-        const pathname = window.location.pathname;
-        
-        // basePath 자동 감지 로직
-        const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
-        const isGitHubPages = hostname.includes("github.io");
-        
-        // 로컬 개발 환경이 아닌 경우 basePath 추가
-        if (!isLocalhost) {
-          const pathParts = pathname.split("/").filter(Boolean);
-          // GitHub Pages: repo 이름이 pathname의 첫 번째 요소
-          if (isGitHubPages) {
-            // pathname이 "/mobile-invite"로 시작하거나, 첫 번째 경로가 "mobile-invite"
-            if (pathname.startsWith("/mobile-invite") || (pathParts.length > 0 && pathParts[0] === "mobile-invite")) {
-              url = `/mobile-invite${url}`;
-            } else {
-              // 루트 경로인 경우에도 basePath 추가
-              url = `/mobile-invite${url}`;
-            }
-          }
-          // 기타 프로덕션 환경
-          else {
-            const pathParts = pathname.split("/").filter(Boolean);
-            if (pathParts.length > 0 && pathParts[0] === "mobile-invite") {
-              url = `/mobile-invite${url}`;
-            } else if (pathname.startsWith("/mobile-invite")) {
-              url = `/mobile-invite${url}`;
-            } else {
-              // basePath가 없는 경우도 추가 (프로덕션 환경에서는 보통 basePath가 있음)
-              url = `/mobile-invite${url}`;
-            }
-          }
-        }
+    if (typeof window === "undefined" || !invite.music?.url) {
+      if (invite.music?.url) {
+        // SSR 환경에서는 그대로 사용 (개발 환경)
+        setMusicUrl(invite.music.url.replace(/ /g, "%20"));
       }
-
-      // 파일명 공백을 URL 인코딩
-      url = url.replace(/ /g, "%20");
-      setMusicUrl(url);
-
-      // 디버깅용 콘솔 로그
-      console.log("=== Music Player Debug ===");
-      console.log("Original URL:", invite.music.url);
-      console.log("Final Music URL:", url);
-      console.log("Current pathname:", window.location.pathname);
-      console.log("Current hostname:", window.location.hostname);
-      console.log("Full URL:", window.location.href);
-    } else if (invite.music?.url) {
-      // 서버 사이드 렌더링 시 (개발 환경)
-      setMusicUrl(invite.music.url.replace(/ /g, "%20"));
+      return;
     }
+
+    let url = invite.music.url;
+
+    // 절대 경로가 아니면 basePath 추가
+    if (
+      url.startsWith("/") &&
+      !url.startsWith("//") &&
+      !url.startsWith("http")
+    ) {
+      const hostname = window.location.hostname;
+      const pathname = window.location.pathname;
+      const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
+
+      // 로컬 개발 환경이 아닌 경우 basePath 추가
+      if (!isLocalhost) {
+        // 프로덕션 환경에서는 항상 basePath 추가
+        url = `/mobile-invite${url}`;
+      }
+      // 로컬 환경에서는 그대로 사용
+    }
+
+    // 파일명 공백을 URL 인코딩
+    url = url.replace(/ /g, "%20");
+    setMusicUrl(url);
+
+    // 디버깅용 콘솔 로그
+    console.log("=== Music Player Debug ===");
+    console.log("Original URL:", invite.music.url);
+    console.log("Final Music URL:", url);
+    console.log("Current pathname:", pathname);
+    console.log("Current hostname:", hostname);
+    console.log("Full URL:", window.location.href);
   }, []);
 
   useEffect(() => {
@@ -115,22 +94,28 @@ export default function MusicPlayer() {
   };
 
   // 음악 파일이 없으면 플레이어 숨김
-  if (!invite.music?.url) return null;
+  if (!invite.music?.url) {
+    console.warn("Music URL not found in invite data");
+    return null;
+  }
+
+  // musicUrl이 아직 설정되지 않았어도 플레이어는 표시 (로딩 중)
+  const isReady = musicUrl.length > 0;
 
   return (
     <div className="fixed bottom-6 right-6 z-50">
       <div className="flex flex-col items-end gap-2">
         {/* 음악 정보 */}
-        {isPlaying && (
+        {isPlaying && isReady && (
           <div className="bg-white/90 backdrop-blur-sm rounded-full px-4 py-2 shadow-lg border border-[#e8e3d8] text-xs text-[#6b5d4a] whitespace-nowrap">
             {invite.music.title || "Morning with U"}
           </div>
         )}
 
-        {/* 플레이어 컨트롤 - musicUrl이 없어도 표시 */}
+        {/* 플레이어 컨트롤 - 항상 표시 */}
         <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm rounded-full p-2 shadow-lg border border-[#e8e3d8]">
-          {/* 음소거 버튼 */}
-          {musicUrl && (
+          {/* 음소거 버튼 - musicUrl이 있을 때만 표시 */}
+          {isReady && (
             <button
               onClick={toggleMute}
               className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f0ede5] transition-colors text-[#6b5d4a]"
@@ -170,14 +155,14 @@ export default function MusicPlayer() {
             </button>
           )}
 
-          {/* 재생/일시정지 버튼 */}
+          {/* 재생/일시정지 버튼 - 항상 표시 */}
           <button
             onClick={togglePlay}
-            disabled={!musicUrl}
-            className={`w-10 h-10 flex items-center justify-center rounded-full text-white hover:bg-[#4a3d30] transition-colors shadow-md ${
-              musicUrl ? "bg-[#5a4a3a]" : "bg-gray-400 cursor-not-allowed"
+            disabled={!isReady}
+            className={`w-10 h-10 flex items-center justify-center rounded-full text-white transition-colors shadow-md ${
+              isReady ? "bg-[#5a4a3a] hover:bg-[#4a3d30]" : "bg-gray-400 cursor-not-allowed"
             }`}
-            aria-label={isPlaying ? "일시정지" : "재생"}
+            aria-label={isPlaying ? "일시정지" : isReady ? "재생" : "로딩 중..."}
           >
             {isPlaying ? (
               <svg
@@ -203,23 +188,30 @@ export default function MusicPlayer() {
       </div>
 
       {/* 오디오 요소 - musicUrl이 있을 때만 렌더링 */}
-      {musicUrl && (
+      {isReady && (
         <audio
           ref={audioRef}
           src={musicUrl}
           loop
-          preload="metadata"
+          preload="auto"
           onEnded={() => setIsPlaying(false)}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
           onError={(e) => {
-            console.error("Audio load error:", e);
-            console.error("Failed to load:", musicUrl);
+            const audio = e.target as HTMLAudioElement;
+            console.error("=== Audio Load Error ===");
+            console.error("Error:", e);
+            console.error("Failed URL:", musicUrl);
+            console.error("Audio src:", audio.src);
             console.error("Current URL:", window.location.href);
             console.error("Pathname:", window.location.pathname);
+            console.error("Hostname:", window.location.hostname);
           }}
           onLoadedData={() => {
-            console.log("Audio loaded successfully:", musicUrl);
+            console.log("✅ Audio loaded successfully:", musicUrl);
+          }}
+          onCanPlay={() => {
+            console.log("✅ Audio can play:", musicUrl);
           }}
         />
       )}

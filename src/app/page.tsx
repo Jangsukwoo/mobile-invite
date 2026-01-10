@@ -8,6 +8,7 @@ import Account from "@/components/Account";
 import Share from "@/components/Share";
 import Guestbook from "@/components/Guestbook";
 import CoverHero from "@/components/CoverHero";
+import MusicPlayer from "@/components/MusicPlayer";
 
 export default function Home() {
   return (
@@ -22,6 +23,7 @@ export default function Home() {
       <Account />
       <Share />
       <Guestbook />
+      <MusicPlayer />
     </main>
   );
 }

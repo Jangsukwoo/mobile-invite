@@ -25,15 +25,12 @@ export default function Location() {
     setIsMounted(true);
   }, []);
 
-  // 카카오맵 Embed URL (좌표 기반) - 네이버지도 iframe embed 제한으로 카카오맵 사용
-  const kakaoMapEmbedUrl = loc.latitude && loc.longitude
-    ? `https://map.kakao.com/link/map/${encodeURIComponent(loc.address)},${loc.latitude},${loc.longitude}`
-    : null;
-  
   // 네이버지도 링크용 URL
-  const naverMapLinkUrl = loc.naverMapUrl || `https://map.naver.com/v5/search/${encodeURIComponent(loc.address)}`;
-  
-  // 구글지도 Embed (대체용)
+  const naverMapLinkUrl =
+    loc.naverMapUrl ||
+    `https://map.naver.com/v5/search/${encodeURIComponent(loc.address)}`;
+
+  // 구글지도 Embed - 네이버지도와 카카오맵 iframe embed가 제한적이어서 구글지도 사용
   const googleMapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
     loc.address
   )}&output=embed&hl=ko&z=16`;
@@ -54,38 +51,42 @@ export default function Location() {
           <p className="text-sm text-[#8b7a6a]">{loc.address}</p>
         </div>
 
-        {/* 네이버지도 링크 + 카카오맵 iframe 표시 */}
+        {/* 네이버지도 링크 + 구글지도 iframe 표시 */}
         {isMounted ? (
           <div className="space-y-4">
-            {/* 네이버지도 링크 (클릭 가능한 카드) */}
+            {/* 네이버지도 링크 (클릭 가능한 카드) - 가장 위에 표시 */}
             <a
               href={naverMapLinkUrl}
               target="_blank"
               rel="noreferrer"
               className="block rounded-xl overflow-hidden border-2 border-[#03C75A] shadow-md bg-white relative hover:shadow-lg transition-all group"
             >
-              <div className="w-full h-[180px] bg-[linear-gradient(to_bottom_right,#03C75A,#02B350)] flex items-center justify-center relative overflow-hidden">
+              <div className="w-full h-[160px] bg-[linear-gradient(to_bottom_right,#03C75A,#02B350)] flex items-center justify-center relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22 fill=%22%23fff%22/%3E%3C/svg%3E')]"></div>
                 <div className="relative text-center z-10 px-4">
-                  <div className="text-white text-xl font-bold mb-1">네이버지도</div>
-                  <div className="text-white/95 text-sm mb-3">{loc.address}</div>
+                  <div className="text-white text-xl font-bold mb-1">
+                    네이버지도
+                  </div>
+                  <div className="text-white/95 text-sm mb-3">
+                    {loc.address}
+                  </div>
                   <div className="bg-white/25 backdrop-blur-sm rounded-full px-5 py-2 text-xs text-white font-medium group-hover:bg-white/35 transition-colors inline-block">
-                    네이버지도에서 보기 →
+                    클릭하여 네이버지도에서 보기 →
                   </div>
                 </div>
               </div>
             </a>
-            
-            {/* 카카오맵 iframe (지도 미리보기) */}
+
+            {/* 구글지도 iframe (지도 미리보기) - 네이버지도 iframe embed 제한으로 구글지도 사용 */}
             <div
-              className="rounded-xl overflow-hidden border-2 border-[#FEE500] shadow-md bg-[#f5f5f5] relative"
+              className="rounded-xl overflow-hidden border-2 border-[#e8e3d8] shadow-md bg-[#f5f5f5] relative"
               style={{ minHeight: "350px" }}
             >
-              <div className="absolute top-2 left-2 bg-[#FEE500] text-black text-xs px-2 py-1 rounded z-10 font-medium">
-                카카오맵 미리보기
+              <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[#5a4a3a] text-xs px-2 py-1 rounded z-10 font-medium">
+                지도 미리보기
               </div>
               <iframe
-                title="kakao-map"
+                title="google-map"
                 width="100%"
                 height="400"
                 frameBorder="0"
@@ -95,18 +96,12 @@ export default function Location() {
                 allowFullScreen
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                src={loc.latitude && loc.longitude 
-                  ? `https://map.kakao.com/embed/${loc.longitude}/${loc.latitude}?level=3`
-                  : `https://map.kakao.com/embed/search/${encodeURIComponent(loc.address)}`}
+                src={googleMapEmbedUrl}
                 style={{
                   border: 0,
                   width: "100%",
                   height: "400px",
                   display: "block",
-                }}
-                onError={() => {
-                  // 카카오맵 로드 실패 시 구글지도로 대체하는 로직은 클라이언트에서 처리하기 어려움
-                  console.warn("카카오맵 로드 실패");
                 }}
               />
             </div>
