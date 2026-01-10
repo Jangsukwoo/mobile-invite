@@ -33,12 +33,28 @@ export default function Location() {
 
   useEffect(() => {
     setIsMounted(true);
+  }, []);
 
-    // Google Maps API 키 확인
-    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
+  useEffect(() => {
+    if (!isMounted) return;
+    if (!loc.latitude || !loc.longitude) {
+      console.error("좌표 정보가 없습니다.");
+      setMapLoaded(false);
+      return;
+    }
 
-    if (!apiKey || !mapRef.current || !loc.latitude || !loc.longitude) {
-      console.warn("Google Maps API 키가 없거나 좌표가 없습니다.");
+    // Google Maps API 키 (fallback 포함)
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || "AIzaSyC69K-tY1IoQTquNXQjz1QLFoMYOlJWo7g";
+    
+    console.log("=== Google Maps Debug ===");
+    console.log("API Key (exists):", !!apiKey);
+    console.log("API Key (first 10):", apiKey?.substring(0, 10) + "...");
+    console.log("Latitude:", loc.latitude);
+    console.log("Longitude:", loc.longitude);
+
+    if (!apiKey) {
+      console.error("Google Maps API 키가 설정되지 않았습니다.");
+      setMapLoaded(false);
       return;
     }
 
@@ -46,6 +62,7 @@ export default function Location() {
     const loadGoogleMap = () => {
       // 이미 Google Maps API가 로드되어 있으면 바로 사용
       if (window.google && window.google.maps) {
+        console.log("Google Maps API 이미 로드됨");
         createMap();
         return;
       }
@@ -54,6 +71,7 @@ export default function Location() {
       if (
         document.querySelector('script[src*="maps.googleapis.com/maps/api/js"]')
       ) {
+        console.log("Google Maps API 스크립트 로드 중, 대기...");
         const checkGoogle = setInterval(() => {
           if (window.google && window.google.maps) {
             clearInterval(checkGoogle);
@@ -67,18 +85,24 @@ export default function Location() {
             console.warn("Google Maps API 로드 타임아웃");
             setMapLoaded(false);
           }
-        }, 5000);
+        }, 10000);
 
         return;
       }
 
       // Google Maps API 스크립트 로드
       const script = document.createElement("script");
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&language=ko&region=KR&loading=async`;
+      const scriptUrl = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&language=ko&region=KR`;
+      script.src = scriptUrl;
       script.async = true;
       script.defer = true;
+      
+      console.log("Google Maps API 스크립트 로드 시작:", scriptUrl.replace(apiKey, "API_KEY_HIDDEN"));
+      
       script.onload = () => {
+        console.log("Google Maps API 스크립트 로드 완료");
         if (window.google && window.google.maps) {
+          console.log("Google Maps API 사용 가능");
           createMap();
         } else {
           console.error("Google Maps API를 로드할 수 없습니다.");
@@ -86,16 +110,27 @@ export default function Location() {
         }
       };
       script.onerror = (error) => {
-        console.error("Google Maps API 로드 실패:", error);
+        console.error("Google Maps API 스크립트 로드 실패:", error);
+        console.error("API URL:", scriptUrl.replace(apiKey, "API_KEY_HIDDEN"));
         setMapLoaded(false);
       };
       document.head.appendChild(script);
     };
 
     const createMap = () => {
-      if (!mapRef.current || googleMapRef.current) return;
+      if (!mapRef.current) {
+        console.error("지도 컨테이너가 없습니다.");
+        return;
+      }
+      
+      if (googleMapRef.current) {
+        console.warn("지도가 이미 생성되었습니다.");
+        return;
+      }
 
       try {
+        console.log("지도 생성 시작:", loc.latitude, loc.longitude);
+        
         const mapOptions = {
           center: {
             lat: loc.latitude!,
@@ -173,20 +208,30 @@ export default function Location() {
         // 처음 로드 시 정보창 자동 표시
         infoWindow.open(map, marker);
 
+        console.log("Google Maps 지도 생성 성공");
         setMapLoaded(true);
       } catch (error) {
         console.error("Google Maps 생성 실패:", error);
+        console.error("Error details:", JSON.stringify(error, null, 2));
         setMapLoaded(false);
       }
     };
 
-    // 약간의 지연 후 지도 로드 시도
-    const timer = setTimeout(() => {
+    // 약간의 지연 후 지도 컨테이너가 준비될 때까지 대기
+    const waitForContainer = setTimeout(() => {
+      if (!mapRef.current) {
+        console.error("지도 컨테이너를 찾을 수 없습니다.");
+        setMapLoaded(false);
+        return;
+      }
+
+      console.log("Map Ref 준비됨");
+      // 지도 로드 시작
       loadGoogleMap();
-    }, 100);
+    }, 500);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(waitForContainer);
       if (googleMapRef.current) {
         googleMapRef.current = null;
       }
@@ -219,16 +264,11 @@ export default function Location() {
               <div className="absolute inset-0 flex items-center justify-center bg-[#f5f5f5] z-10">
                 <div className="text-center">
                   <div className="text-[#8b7a6a] text-sm mb-2">
-                    {process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-                      ? "지도를 불러오는 중..."
-                      : "Google Maps API 키가 필요합니다."}
+                    지도를 불러오는 중...
                   </div>
-                  {!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && (
-                    <p className="text-xs text-[#8b7a6a] mt-2">
-                      .env.local 파일에 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY를
-                      설정해주세요.
-                    </p>
-                  )}
+                  <div className="text-xs text-[#8b7a6a] mt-2">
+                    잠시만 기다려주세요
+                  </div>
                 </div>
               </div>
             )}
