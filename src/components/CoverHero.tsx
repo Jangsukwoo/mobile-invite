@@ -35,30 +35,30 @@ export default function CoverHero() {
       <FallingFlowers count={18} />
 
       {/* 사진 영역 */}
-      <div className="relative z-20 flex min-h-[100svh] items-center justify-center px-4 py-20">
-        <div className="relative w-full max-w-[560px]">
+      <div className="relative z-20 flex min-h-[100svh] items-center justify-center px-0 sm:px-4 py-0 sm:py-20">
+        <div className="relative w-full h-[100svh] sm:h-auto sm:max-w-[560px]">
           {/* 사진 */}
-          <div className="relative w-full">
+          <div className="relative w-full h-full">
             <img
               src={coverImage}
               alt="cover"
               className="
                 w-full
-                h-auto
+                h-full
                 object-cover
-                rounded-2xl
-                shadow-[0_20px_60px_rgba(0,0,0,0.15)]
-                border-2
-                border-[#e8e3d8]
+                sm:rounded-2xl
+                sm:shadow-[0_20px_60px_rgba(0,0,0,0.15)]
+                sm:border-2
+                sm:border-[#e8e3d8]
               "
             />
 
             {/* 사진 안 이름 (우아한 필기체) */}
-            <div className="absolute bottom-6 left-6 right-6 flex justify-between pointer-events-none">
+            <div className="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 right-4 sm:right-6 flex justify-between pointer-events-none">
               <span
                 className="
                   handwrite
-                  text-[24px]
+                  text-[22px]
                   sm:text-[28px]
                   text-white
                   drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]
@@ -71,7 +71,7 @@ export default function CoverHero() {
               <span
                 className="
                   handwrite
-                  text-[24px]
+                  text-[22px]
                   sm:text-[28px]
                   text-white
                   drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]
@@ -83,12 +83,12 @@ export default function CoverHero() {
             </div>
 
             {/* Two become one 텍스트 애니메이션 */}
-            <div className="absolute top-6 sm:top-8 left-1/2 transform -translate-x-1/2 pointer-events-none w-full px-6">
+            <div className="absolute top-4 sm:top-8 left-1/2 transform -translate-x-1/2 pointer-events-none w-full px-4 sm:px-6">
               <div className="text-center">
                 <span
                   className="
                     handwrite
-                    text-[32px]
+                    text-[28px]
                     sm:text-[40px]
                     text-white
                     drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]
