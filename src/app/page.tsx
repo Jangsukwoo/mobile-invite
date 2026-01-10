@@ -5,8 +5,9 @@ import Gallery from "@/components/Gallery";
 import Location from "@/components/Location";
 import Contact from "@/components/Contact";
 import Account from "@/components/Account";
+import Notice from "@/components/Notice";
 import Share from "@/components/Share";
-import Guestbook from "@/components/Guestbook";
+import Guestbook, { EndingMessage } from "@/components/Guestbook";
 import CoverHero from "@/components/CoverHero";
 import MusicPlayer from "@/components/MusicPlayer";
 
@@ -21,8 +22,10 @@ export default function Home() {
       <Location />
       <Contact />
       <Account />
+      <Notice />
       <Share />
       <Guestbook />
+      <EndingMessage />
       <MusicPlayer />
     </main>
   );

@@ -47,10 +47,10 @@ export default function Account() {
           마음 전하실 곳
         </h2>
         <div className="w-16 h-px bg-[#d4c4b0] mx-auto"></div>
-        <p className="text-xs text-[#8b7a6a] text-center mb-8 leading-relaxed">
-          축하의 마음만으로도 충분합니다.
+        <p className="text-sm text-[#6b5d4a] text-center mb-8 leading-relaxed font-light">
+          참석이 어려우신 분들을 위해 계좌 정보를 함께 안내드립니다.
           <br />
-          계좌번호는 눌러서 확인하고 복사할 수 있어요.
+          마음을 전해주시는 모든 분들께 진심으로 감사드립니다.
         </p>
 
         <div className="space-y-3">

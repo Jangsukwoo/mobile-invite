@@ -11,14 +11,62 @@ declare global {
   }
 }
 
-function LinkButton({ href, label }: { href: string; label: string }) {
+function MapIcon({ type }: { type: "tmap" | "kakao" | "naver" | "google" }) {
+  const icons = {
+    tmap: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+        <path
+          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+          fill="#FF6B00"
+        />
+      </svg>
+    ),
+    kakao: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+        <path
+          d="M12 3C7.03 3 3 6.58 3 11c0 2.5 1.62 4.71 4.07 5.93l-.87 3.25 3.43-2.26c.46.05.93.08 1.37.08 4.97 0 9-3.58 9-8s-4.03-8-9-8z"
+          fill="#3C1E1E"
+        />
+      </svg>
+    ),
+    naver: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+        <path
+          d="M16.273 12.845L7.376 0H0v24h7.726V11.156L16.624 24H24V0h-7.727v12.845z"
+          fill="#03C75A"
+        />
+      </svg>
+    ),
+    google: (
+      <svg viewBox="0 0 24 24" fill="none" className="w-5 h-5">
+        <path
+          d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+          fill="#4285F4"
+        />
+      </svg>
+    ),
+  };
+
+  return icons[type];
+}
+
+function LinkButton({
+  href,
+  label,
+  icon,
+}: {
+  href: string;
+  label: string;
+  icon?: "tmap" | "kakao" | "naver" | "google";
+}) {
   return (
     <a
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="block w-full rounded-xl border-2 border-[#d4c4b0] px-4 py-3 text-sm text-center text-[#6b5d4a] hover:bg-[#f0ede5] transition-colors font-light"
+      className="flex items-center justify-center gap-2 w-full rounded-xl border-2 border-[#d4c4b0] px-4 py-3 text-sm text-center text-[#6b5d4a] hover:bg-[#f0ede5] transition-colors font-light"
     >
+      {icon && <MapIcon type={icon} />}
       {label}
     </a>
   );
@@ -270,15 +318,139 @@ export default function Location() {
         )}
 
         {/* 지도 선택 버튼 */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {loc.tmapUrl && (
+            <LinkButton href={loc.tmapUrl} label="티맵" icon="tmap" />
+          )}
           {loc.naverMapUrl && (
-            <LinkButton href={loc.naverMapUrl} label="네이버지도" />
+            <LinkButton href={loc.naverMapUrl} label="네이버지도" icon="naver" />
           )}
           {loc.kakaoMapUrl && (
-            <LinkButton href={loc.kakaoMapUrl} label="카카오맵" />
+            <LinkButton href={loc.kakaoMapUrl} label="카카오맵" icon="kakao" />
           )}
-          <LinkButton href={loc.googleMapUrl} label="구글지도" />
+          <LinkButton href={loc.googleMapUrl} label="구글지도" icon="google" />
         </div>
+
+        {/* 교통편 정보 */}
+        {loc.transportation && (
+          <div className="mt-10 space-y-6">
+            {/* 지하철 */}
+            {loc.transportation.subway && loc.transportation.subway.length > 0 && (
+              <div className="text-left space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="w-6 h-6 text-[#5a4a3a]"
+                  >
+                    <rect x="4" y="4" width="16" height="16" rx="2" />
+                    <path d="M4 12h16M8 4v16M16 4v16" />
+                  </svg>
+                  <h3 className="text-lg font-normal text-[#5a4a3a]" style={{ fontFamily: 'serif' }}>
+                    지하철
+                  </h3>
+                </div>
+                <ul className="space-y-2 pl-8">
+                  {loc.transportation.subway.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="text-sm text-[#6b5d4a] font-light leading-relaxed"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* 버스 */}
+            {loc.transportation.bus && loc.transportation.bus.length > 0 && (
+              <div className="text-left space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="w-6 h-6 text-[#5a4a3a]"
+                  >
+                    <path d="M4 6h16M4 10h16M6 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM4 6l-1 4h18l-1-4M6 14h12" />
+                  </svg>
+                  <h3 className="text-lg font-normal text-[#5a4a3a]" style={{ fontFamily: 'serif' }}>
+                    버스
+                  </h3>
+                </div>
+                <ul className="space-y-2 pl-8">
+                  {loc.transportation.bus.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="text-sm text-[#6b5d4a] font-light leading-relaxed"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* 자가용 */}
+            {loc.transportation.car && (
+              <div className="text-left space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="w-6 h-6 text-[#5a4a3a]"
+                  >
+                    <path d="M5 17h14v-3H5v3zM16 8h-8V5h8v3zM4 10h16M7 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM17 20a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" />
+                  </svg>
+                  <h3 className="text-lg font-normal text-[#5a4a3a]" style={{ fontFamily: 'serif' }}>
+                    자가용
+                  </h3>
+                </div>
+                <p className="text-sm text-[#6b5d4a] font-light leading-relaxed pl-8">
+                  {loc.transportation.car}
+                </p>
+              </div>
+            )}
+
+            {/* 도보 */}
+            {loc.transportation.walking && loc.transportation.walking.length > 0 && (
+              <div className="text-left space-y-2">
+                <div className="flex items-center gap-2 mb-3">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    className="w-6 h-6 text-[#5a4a3a]"
+                  >
+                    <circle cx="12" cy="5" r="2" />
+                    <path d="M9 22v-7l-2-2v-5l5-2 5 2v5l-2 2v7" />
+                    <path d="M15 10l-3-1-3 1" />
+                  </svg>
+                  <h3 className="text-lg font-normal text-[#5a4a3a]" style={{ fontFamily: 'serif' }}>
+                    도보
+                  </h3>
+                </div>
+                <ul className="space-y-2 pl-8">
+                  {loc.transportation.walking.map((item, idx) => (
+                    <li
+                      key={idx}
+                      className="text-sm text-[#6b5d4a] font-light leading-relaxed"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
 
         <div className="mt-6 text-xs text-[#8b7a6a] leading-relaxed">
           <p className="mb-1">

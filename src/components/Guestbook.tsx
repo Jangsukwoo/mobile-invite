@@ -279,3 +279,19 @@ export default function Guestbook() {
     </Section>
   );
 }
+
+export function EndingMessage() {
+  return (
+    <Section>
+      <div className="text-center space-y-6 py-8">
+        <p className="text-base text-[#6b5d4a] font-light leading-relaxed whitespace-pre-line">
+          바쁘신 일정에도 축복의 자리를 함께해 주셔서 진심으로 감사드립니다.
+          {"\n"}
+          서로를 존중하며 사랑이 가득한 가정을 이루겠습니다.
+          {"\n"}
+          앞으로도 많은 격려와 사랑 부탁드립니다.
+        </p>
+      </div>
+    </Section>
+  );
+}

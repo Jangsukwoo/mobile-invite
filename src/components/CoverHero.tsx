@@ -81,6 +81,27 @@ export default function CoverHero() {
                 {invite.bride}
               </span>
             </div>
+
+            {/* Two become one 텍스트 애니메이션 */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none w-full px-6">
+              <div className="text-center">
+                <span
+                  className="
+                    handwrite
+                    text-[32px]
+                    sm:text-[40px]
+                    text-white
+                    drop-shadow-[0_2px_12px_rgba(0,0,0,0.6)]
+                    font-medium
+                    inline-block
+                    opacity-0
+                    animate-[writeReveal_2s_ease-out_1s_forwards]
+                  "
+                >
+                  Two become one
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

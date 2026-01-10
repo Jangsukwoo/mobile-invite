@@ -16,8 +16,15 @@ export type Invite = {
     googleMapUrl: string;
     kakaoMapUrl?: string;
     naverMapUrl?: string;
+    tmapUrl?: string;
     latitude?: number;
     longitude?: number;
+    transportation?: {
+      subway?: string[];
+      bus?: string[];
+      car?: string;
+      walking?: string[];
+    };
   };
 
   contacts: {
@@ -58,12 +65,29 @@ export const invite: Invite = {
   venue: "메종드아나하 그랜드볼룸홀",
 
   location: {
-    address: "서울특별시 강남구 언주로 517",
+    address: "서울특별시 강남구 언주로 517 메종드아나하 (신라스테이 역삼 B1층)",
     googleMapUrl: "https://www.google.com/maps/search/메종드아나하",
     kakaoMapUrl: "https://map.kakao.com/?q=메종드아나하",
     naverMapUrl: "https://map.naver.com/v5/search/메종드아나하",
+    tmapUrl: "https://tmapapi.sktelecom.com/main/search.do?searchKeyword=메종드아나하",
     latitude: 37.5017, // 메종드아나하 (신라스테이 호텔 강남 B1) 정확한 좌표
     longitude: 127.036,
+    transportation: {
+      subway: [
+        "7호선·분당선 강남구청역 3-1번 출구 (도보 약 8분)",
+        "3호선 압구정역 4번 출구 (도보 약 15분)",
+      ],
+      bus: [
+        "영동소방파출소·호림아트센터앞 하차 (도보 2분)",
+        "간선 301·472·361",
+        "지선 3011·4412·4212·4419 영동고교앞 하차 (도보 2분)",
+      ],
+      car: "서울특별시 강남구 언주로 517 메종드아나하 (주차 가능)",
+      walking: [
+        "7호선·분당선 강남구청역 3-1번 출구 → 도보 8분",
+        "3호선 압구정역 4번 출구 → 도보 15분",
+      ],
+    },
   },
 
   contacts: {
