@@ -4,7 +4,7 @@ export type Invite = {
 
   cover: {
     image: string;
-    tagline: string;
+    tagline?: string;
   };
 
   date: string;
@@ -14,6 +14,10 @@ export type Invite = {
   location: {
     address: string;
     googleMapUrl: string;
+    kakaoMapUrl?: string;
+    naverMapUrl?: string;
+    latitude?: number;
+    longitude?: number;
   };
 
   contacts: {
@@ -35,6 +39,11 @@ export type Invite = {
 
   message: string;
   gallery: string[];
+  
+  music?: {
+    url: string;
+    title?: string;
+  };
 };
 
 export const invite: Invite = {
@@ -42,7 +51,6 @@ export const invite: Invite = {
   bride: "Jooyoung",
   cover: {
     image: "images/cover.jpg",
-    tagline: "두 사람의 이야기가 열리고 있어요",
   },
 
   date: "2026년 3월 28일 토요일",
@@ -50,9 +58,12 @@ export const invite: Invite = {
   venue: "메종드아나하 그랜드볼룸홀",
 
   location: {
-    address: "서울특별시 강남구 언주로 517 신라스테이호텔 역삼 지하 1층",
-    googleMapUrl:
-      "https://www.google.com/maps/place/%EB%A9%94%EC%A2%85%EB%93%9C%EC%95%84%EB%82%98%ED%95%98/data=!4m2!3m1!1s0x0:0xba0b85c121d17c22?sa=X&ved=1t:2428&ictx=111&cshid=1766921607285359",
+address: "메종드아나하",
+googleMapUrl: "https://www.google.com/maps/search/메종드아나하",
+kakaoMapUrl: "https://map.kakao.com/link/search/메종드아나하",
+naverMapUrl: "https://map.naver.com/v5/search/메종드아나하",
+latitude: 37.5006, // 신라스테이 역삼 근처 좌표 (정확한 좌표로 수정 필요)
+longitude: 127.0364,
   },
 
   contacts: {
@@ -92,4 +103,9 @@ export const invite: Invite = {
 `,
 
   gallery: ["images/1.jpg"],
+
+  music: {
+    url: "/music/Morning with U.mp3",
+    title: "Morning with U",
+  },
 };
