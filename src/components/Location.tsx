@@ -327,23 +327,7 @@ export default function Location() {
         )}
 
         {/* 지도 선택 버튼 */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {loc.tmapUrl && (
-            <LinkButton
-              href={loc.tmapUrl}
-              label="티맵"
-              icon="tmap"
-              onClick={(e) => {
-                e.preventDefault();
-                // 티맵 앱 딥링크 (앱이 설치되어 있으면 앱이 열림)
-                // 좌표를 포함한 경로 안내 링크
-                const tmapLink = `tmap://route?goalname=${encodeURIComponent(
-                  "메종드아나하"
-                )}&goalx=127.036&goaly=37.5017`;
-                window.location.href = tmapLink;
-              }}
-            />
-          )}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {loc.naverMapUrl && (
             <LinkButton
               href={loc.naverMapUrl}
