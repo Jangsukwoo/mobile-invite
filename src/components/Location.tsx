@@ -49,17 +49,19 @@ export default function Location() {
     if (typeof window !== "undefined") {
       import("leaflet").then((L) => {
         delete (L.default.Icon.Default.prototype as any)._getIconUrl;
-        
+
         // 더 예쁜 커스텀 마커 사용 (빨간색 핀)
         const customIcon = L.default.icon({
-          iconUrl: "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
-          shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
+          iconUrl:
+            "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+          shadowUrl:
+            "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png",
           iconSize: [25, 41],
           iconAnchor: [12, 41],
           popupAnchor: [1, -34],
           shadowSize: [41, 41],
         });
-        
+
         L.default.Marker.prototype.options.icon = customIcon;
       });
     }
@@ -102,13 +104,15 @@ export default function Location() {
                 maxZoom={19}
               />
               <Marker position={[loc.latitude!, loc.longitude!]}>
-                <Popup className="custom-popup" autoClose={false} closeOnClick={false}>
+                <Popup
+                  className="custom-popup"
+                  autoClose={false}
+                  closeOnClick={false}
+                >
                   <div className="text-sm font-semibold text-[#5a4a3a] py-1">
                     {invite.venue}
                   </div>
-                  <div className="text-xs text-[#8b7a6a]">
-                    {loc.address}
-                  </div>
+                  <div className="text-xs text-[#8b7a6a]">{loc.address}</div>
                 </Popup>
               </Marker>
             </MapContainer>
