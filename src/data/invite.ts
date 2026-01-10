@@ -69,8 +69,8 @@ export const invite: Invite = {
     googleMapUrl: "https://www.google.com/maps/search/메종드아나하",
     kakaoMapUrl: "https://map.kakao.com/?q=메종드아나하",
     naverMapUrl: "https://map.naver.com/v5/search/메종드아나하",
-    tmapUrl:
-      "https://tmapapi.sktelecom.com/main/search.do?searchKeyword=메종드아나하",
+    // 티맵 앱 딥링크 (앱이 설치되어 있으면 앱 열림)
+    tmapUrl: "tmap://search?name=메종드아나하",
     latitude: 37.5017, // 메종드아나하 (신라스테이 호텔 강남 B1) 정확한 좌표
     longitude: 127.036,
     transportation: {

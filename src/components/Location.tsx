@@ -54,14 +54,23 @@ function LinkButton({
   href,
   label,
   icon,
+  onClick,
 }: {
   href: string;
   label: string;
   icon?: "tmap" | "kakao" | "naver" | "google";
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement>) => void;
 }) {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (onClick) {
+      onClick(e);
+    }
+  };
+
   return (
     <a
       href={href}
+      onClick={onClick ? handleClick : undefined}
       target="_blank"
       rel="noreferrer"
       className="flex items-center justify-center gap-2 w-full rounded-xl border-2 border-[#d4c4b0] px-4 py-3 text-sm text-center text-[#6b5d4a] hover:bg-[#f0ede5] transition-colors font-light"
@@ -320,7 +329,20 @@ export default function Location() {
         {/* 지도 선택 버튼 */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {loc.tmapUrl && (
-            <LinkButton href={loc.tmapUrl} label="티맵" icon="tmap" />
+            <LinkButton
+              href={loc.tmapUrl}
+              label="티맵"
+              icon="tmap"
+              onClick={(e) => {
+                e.preventDefault();
+                // 티맵 앱 딥링크 (앱이 설치되어 있으면 앱이 열림)
+                // 좌표를 포함한 경로 안내 링크
+                const tmapLink = `tmap://route?goalname=${encodeURIComponent(
+                  "메종드아나하"
+                )}&goalx=127.036&goaly=37.5017`;
+                window.location.href = tmapLink;
+              }}
+            />
           )}
           {loc.naverMapUrl && (
             <LinkButton
