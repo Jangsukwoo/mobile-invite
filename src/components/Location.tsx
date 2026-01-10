@@ -33,7 +33,10 @@ export default function Location() {
   return (
     <Section>
       <div className="text-center space-y-6">
-        <h2 className="text-2xl font-light text-[#5a4a3a] tracking-wide" style={{ fontFamily: 'serif' }}>
+        <h2
+          className="text-2xl font-light text-[#5a4a3a] tracking-wide"
+          style={{ fontFamily: "serif" }}
+        >
           오시는 길
         </h2>
         <div className="w-16 h-px bg-[#d4c4b0] mx-auto"></div>
@@ -44,7 +47,10 @@ export default function Location() {
         </div>
 
         {/* 지도 미리보기: API 없이 Google Maps Embed */}
-        <div className="rounded-xl overflow-hidden border-2 border-[#e8e3d8] shadow-md mb-6 bg-[#f5f5f5] relative" style={{ minHeight: '300px' }}>
+        <div
+          className="rounded-xl overflow-hidden border-2 border-[#e8e3d8] shadow-md mb-6 bg-[#f5f5f5] relative"
+          style={{ minHeight: "300px" }}
+        >
           {isMounted && (
             <iframe
               title="map"
@@ -60,9 +66,9 @@ export default function Location() {
               src={mapUrl}
               style={{
                 border: 0,
-                width: '100%',
-                height: '400px',
-                display: 'block',
+                width: "100%",
+                height: "400px",
+                display: "block",
               }}
             />
           )}
@@ -75,15 +81,14 @@ export default function Location() {
 
         {/* 지도 선택 버튼 */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          <LinkButton href={loc.googleMapUrl} label="구글지도" />
-          {loc.kakaoMapUrl && (
-            <LinkButton href={loc.kakaoMapUrl} label="카카오맵" />
-          )}
           {loc.naverMapUrl && (
             <LinkButton href={loc.naverMapUrl} label="네이버지도" />
           )}
+          {loc.kakaoMapUrl && (
+            <LinkButton href={loc.kakaoMapUrl} label="카카오맵" />
+          )}
+          <LinkButton href={loc.googleMapUrl} label="구글지도" />
         </div>
-
 
         <div className="mt-6 text-xs text-[#8b7a6a] leading-relaxed">
           <p className="mb-1">

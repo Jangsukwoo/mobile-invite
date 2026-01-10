@@ -1,18 +1,30 @@
+"use client";
+
 import { invite } from "@/data/invite";
 import FallingFlowers from "./FallingFlowers";
 
 export default function CoverHero() {
   const coverImage =
     invite.cover?.image ?? invite.gallery?.[0] ?? "images/cover.jpg";
-  const tagline = invite.cover?.tagline ?? "두 사람의 이야기가 열리고 있어요";
+
+  const handleScrollDown = () => {
+    // ID로 직접 다음 섹션 찾기
+    const coverSection = document.getElementById("cover-section");
+    if (coverSection) {
+      coverSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      // ID를 찾을 수 없으면 화면 높이만큼 스크롤
+      window.scrollTo({ top: window.innerHeight, behavior: "smooth" });
+    }
+  };
 
   return (
     <section className="relative min-h-[100svh] w-full overflow-hidden bg-[#faf9f6]">
       {/* 편지지 느낌의 배경 */}
       <div className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(250,249,246,0.95),rgba(240,238,230,0.98))] z-0" />
-      
+
       {/* 편지지 텍스처 */}
-      <div 
+      <div
         className="absolute inset-0 opacity-[0.03] z-0"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -24,24 +36,7 @@ export default function CoverHero() {
 
       {/* 사진 영역 */}
       <div className="relative z-20 flex min-h-[100svh] items-center justify-center px-4 py-20">
-        <div className="relative w-full max-w-[560px] space-y-8">
-          {/* 메인 문구 - 상단 */}
-          <div className="text-center px-6">
-            <p
-              className="
-                text-[32px]
-                sm:text-[40px]
-                leading-relaxed
-                text-[#5a4a3a]
-                font-light
-                tracking-wide
-              "
-              style={{ fontFamily: 'serif' }}
-            >
-              {tagline}
-            </p>
-          </div>
-
+        <div className="relative w-full max-w-[560px]">
           {/* 사진 */}
           <div className="relative w-full">
             <img
@@ -90,12 +85,28 @@ export default function CoverHero() {
         </div>
       </div>
 
-      {/* 스크롤 힌트 */}
-      <div className="absolute bottom-8 left-0 right-0 z-30 flex justify-center">
-        <div className="text-[#8b7a6a]/60 text-xs tracking-widest animate-bounce">
-          SCROLL
-        </div>
-      </div>
+      {/* 스크롤 버튼 */}
+      <button
+        onClick={handleScrollDown}
+        className="absolute bottom-8 left-0 right-0 z-30 flex flex-col items-center gap-2 text-[#8b7a6a]/70 hover:text-[#8b7a6a] transition-colors group cursor-pointer"
+        aria-label="다음 섹션으로 스크롤"
+      >
+        <span className="text-xs tracking-widest">SCROLL</span>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          strokeWidth={1.5}
+          stroke="currentColor"
+          className="w-6 h-6 animate-bounce group-hover:scale-110 transition-transform"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19.5 13.5L12 21m0 0l-7.5-7.5M12 21V3"
+          />
+        </svg>
+      </button>
     </section>
   );
 }
