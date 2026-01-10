@@ -27,8 +27,10 @@ export default function Location() {
     // 모바일 디바이스 감지
     const checkMobile = () => {
       const userAgent = navigator.userAgent || navigator.vendor;
-      const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
-      const isMobileDevice = mobileRegex.test(userAgent.toLowerCase()) || window.innerWidth < 768;
+      const mobileRegex =
+        /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+      const isMobileDevice =
+        mobileRegex.test(userAgent.toLowerCase()) || window.innerWidth < 768;
       setIsMobile(isMobileDevice);
     };
     checkMobile();
@@ -41,10 +43,13 @@ export default function Location() {
     loc.naverMapUrl ||
     `https://map.naver.com/v5/search/${encodeURIComponent(loc.address)}`;
 
-  // 구글지도 Embed - 네이버지도와 카카오맵 iframe embed가 제한적이어서 구글지도 사용
-  const googleMapEmbedUrl = `https://www.google.com/maps?q=${encodeURIComponent(
-    loc.address
-  )}&output=embed&hl=ko&z=16`;
+  // 카카오맵 Embed URL (좌표 기반)
+  const kakaoMapEmbedUrl =
+    loc.latitude && loc.longitude
+      ? `https://map.kakao.com/link/map/${encodeURIComponent(
+          loc.address
+        )},${loc.latitude},${loc.longitude}`
+      : null;
 
   return (
     <Section>
@@ -88,46 +93,29 @@ export default function Location() {
               </div>
             </a>
 
-            {/* 구글지도 iframe (지도 미리보기) - 모바일에서는 표시하지 않음 (X-Frame-Options 차단) */}
-            {!isMobile && (
-              <div
-                className="rounded-xl overflow-hidden border-2 border-[#e8e3d8] shadow-md bg-[#f5f5f5] relative"
-                style={{ minHeight: "350px" }}
+            {/* 카카오맵 링크 (클릭 가능한 카드) - 지도 미리보기 대신 링크 제공 */}
+            {kakaoMapEmbedUrl && (
+              <a
+                href={kakaoMapEmbedUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="block rounded-xl overflow-hidden border-2 border-[#FEE500] shadow-md bg-white relative hover:shadow-lg transition-all group"
               >
-                <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[#5a4a3a] text-xs px-2 py-1 rounded z-10 font-medium">
-                  지도 미리보기
+                <div className="w-full h-[160px] bg-[linear-gradient(to_bottom_right,#FEE500,#FDD835)] flex items-center justify-center relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-10 bg-[url('data:image/svg+xml,%3Csvg width=%2260%22 height=%2260%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath d=%22M36%2034v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6%2034v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6%204V0H4v4H0v2h4v4h2V6h4V4H6z%22 fill=%22%23000%22/%3E%3C/svg%3E')]"></div>
+                  <div className="relative text-center z-10 px-4">
+                    <div className="text-black text-xl font-bold mb-1">
+                      카카오맵
+                    </div>
+                    <div className="text-black/90 text-sm mb-3">
+                      {loc.address}
+                    </div>
+                    <div className="bg-black/20 backdrop-blur-sm rounded-full px-5 py-2 text-xs text-black font-medium group-hover:bg-black/30 transition-colors inline-block">
+                      클릭하여 카카오맵에서 보기 →
+                    </div>
+                  </div>
                 </div>
-                <iframe
-                  title="google-map"
-                  width="100%"
-                  height="400"
-                  frameBorder="0"
-                  scrolling="no"
-                  marginHeight={0}
-                  marginWidth={0}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  src={googleMapEmbedUrl}
-                  style={{
-                    border: 0,
-                    width: "100%",
-                    height: "400px",
-                    display: "block",
-                  }}
-                />
-              </div>
-            )}
-            {/* 모바일에서 지도 미리보기 안내 */}
-            {isMobile && (
-              <div className="rounded-xl border-2 border-[#e8e3d8] bg-[#f5f5f5] p-6 text-center">
-                <p className="text-[#6b5d4a] text-sm mb-3">
-                  모바일에서는 지도 미리보기가 제한될 수 있습니다.
-                </p>
-                <p className="text-[#8b7a6a] text-xs">
-                  아래 버튼을 눌러 각 지도 앱/웹에서 확인해주세요.
-                </p>
-              </div>
+              </a>
             )}
           </div>
         ) : (
