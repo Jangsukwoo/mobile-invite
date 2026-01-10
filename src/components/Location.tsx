@@ -20,9 +20,20 @@ function LinkButton({ href, label }: { href: string; label: string }) {
 export default function Location() {
   const loc = invite.location;
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    // 모바일 디바이스 감지
+    const checkMobile = () => {
+      const userAgent = navigator.userAgent || navigator.vendor;
+      const mobileRegex = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i;
+      const isMobileDevice = mobileRegex.test(userAgent.toLowerCase()) || window.innerWidth < 768;
+      setIsMobile(isMobileDevice);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // 네이버지도 링크용 URL
@@ -77,34 +88,47 @@ export default function Location() {
               </div>
             </a>
 
-            {/* 구글지도 iframe (지도 미리보기) - 네이버지도 iframe embed 제한으로 구글지도 사용 */}
-            <div
-              className="rounded-xl overflow-hidden border-2 border-[#e8e3d8] shadow-md bg-[#f5f5f5] relative"
-              style={{ minHeight: "350px" }}
-            >
-              <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[#5a4a3a] text-xs px-2 py-1 rounded z-10 font-medium">
-                지도 미리보기
+            {/* 구글지도 iframe (지도 미리보기) - 모바일에서는 표시하지 않음 (X-Frame-Options 차단) */}
+            {!isMobile && (
+              <div
+                className="rounded-xl overflow-hidden border-2 border-[#e8e3d8] shadow-md bg-[#f5f5f5] relative"
+                style={{ minHeight: "350px" }}
+              >
+                <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-sm text-[#5a4a3a] text-xs px-2 py-1 rounded z-10 font-medium">
+                  지도 미리보기
+                </div>
+                <iframe
+                  title="google-map"
+                  width="100%"
+                  height="400"
+                  frameBorder="0"
+                  scrolling="no"
+                  marginHeight={0}
+                  marginWidth={0}
+                  allowFullScreen
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  src={googleMapEmbedUrl}
+                  style={{
+                    border: 0,
+                    width: "100%",
+                    height: "400px",
+                    display: "block",
+                  }}
+                />
               </div>
-              <iframe
-                title="google-map"
-                width="100%"
-                height="400"
-                frameBorder="0"
-                scrolling="no"
-                marginHeight={0}
-                marginWidth={0}
-                allowFullScreen
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                src={googleMapEmbedUrl}
-                style={{
-                  border: 0,
-                  width: "100%",
-                  height: "400px",
-                  display: "block",
-                }}
-              />
-            </div>
+            )}
+            {/* 모바일에서 지도 미리보기 안내 */}
+            {isMobile && (
+              <div className="rounded-xl border-2 border-[#e8e3d8] bg-[#f5f5f5] p-6 text-center">
+                <p className="text-[#6b5d4a] text-sm mb-3">
+                  모바일에서는 지도 미리보기가 제한될 수 있습니다.
+                </p>
+                <p className="text-[#8b7a6a] text-xs">
+                  아래 버튼을 눌러 각 지도 앱/웹에서 확인해주세요.
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="w-full h-[400px] flex items-center justify-center text-[#8b7a6a] rounded-xl border-2 border-[#e8e3d8] bg-[#f5f5f5] mb-6">
