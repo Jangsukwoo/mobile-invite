@@ -131,7 +131,19 @@ export const invite: Invite = {
 그 시작의 순간을 함께하고 싶습니다.
 `,
 
-  gallery: ["images/1.jpg"],
+  gallery: [
+    "images/1.jpg",
+    "images/2.jpg",
+    "images/3.jpg",
+    "images/4.jpg",
+    "images/5.jpg",
+    "images/6.jpg",
+    "images/7.jpg",
+    "images/8.jpg",
+    "images/9.jpg",
+    "images/10.jpg",
+    "images/11.jpg",
+  ],
 
   music: {
     url: "/music/Morning with U.mp3",

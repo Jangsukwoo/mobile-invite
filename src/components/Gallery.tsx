@@ -69,12 +69,12 @@ export default function Gallery() {
     <Section>
       <div className="text-center space-y-6">
         <h2 className="text-2xl font-light text-[#5a4a3a] tracking-wide" style={{ fontFamily: 'serif' }}>
-          사진
+          갤러리
         </h2>
         <div className="w-16 h-px bg-[#d4c4b0] mx-auto"></div>
 
         {/* 썸네일 그리드 */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-3 gap-2 sm:gap-3">
           {images.map((src, i) => (
             <button
               key={i}
