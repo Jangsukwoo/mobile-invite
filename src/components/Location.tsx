@@ -100,10 +100,8 @@ export default function Location() {
       return;
     }
 
-    // Google Maps API 키 (fallback 포함)
-    const apiKey =
-      process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
-      "AIzaSyC69K-tY1IoQTquNXQjz1QLFoMYOlJWo7g";
+    // Google Maps API 키
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
     console.log("=== Google Maps Debug ===");
     console.log("API Key (exists):", !!apiKey);
