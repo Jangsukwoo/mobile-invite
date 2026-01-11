@@ -87,10 +87,10 @@ export default function Account() {
                           {acc.bank && acc.number ? (
                             <>
                               <p className="text-xs text-[#8b7a6a]">
-                                {acc.bank} · {acc.holder}
+                                {acc.holder}
                               </p>
                               <p className="text-sm font-normal break-all mt-1 text-[#5a4a3a]">
-                                {acc.number}
+                                {acc.number} {acc.bank}
                               </p>
                             </>
                           ) : (
