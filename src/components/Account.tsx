@@ -80,19 +80,27 @@ export default function Account() {
                   <div className="border-t-2 border-[#e8e3d8] px-5 py-4 space-y-3 bg-white/30">
                     {group.items.map((acc, idx) => (
                       <div
-                        key={`${acc.number}-${idx}`}
+                        key={`${acc.number}-${idx}-${acc.holder}`}
                         className="rounded-xl bg-[#faf9f6] border border-[#e8e3d8] p-4 flex items-center justify-between gap-3"
                       >
-                        <div className="min-w-0">
-                          <p className="text-xs text-[#8b7a6a]">
-                            {acc.bank} · {acc.holder}
-                          </p>
-                          <p className="text-sm font-normal break-all mt-1 text-[#5a4a3a]">
-                            {acc.number}
-                          </p>
+                        <div className="min-w-0 flex-1">
+                          {acc.bank && acc.number ? (
+                            <>
+                              <p className="text-xs text-[#8b7a6a]">
+                                {acc.bank} · {acc.holder}
+                              </p>
+                              <p className="text-sm font-normal break-all mt-1 text-[#5a4a3a]">
+                                {acc.number}
+                              </p>
+                            </>
+                          ) : (
+                            <p className="text-sm text-[#8b7a6a] font-light">
+                              {acc.holder} (계좌번호 추후 업데이트)
+                            </p>
+                          )}
                         </div>
 
-                        <CopyButton text={acc.number} />
+                        {acc.bank && acc.number && <CopyButton text={acc.number} />}
                       </div>
                     ))}
                   </div>

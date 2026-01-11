@@ -49,8 +49,8 @@ export default function Notice() {
         <div className="min-h-[200px] text-left pt-6">
           {activeTab === "식권" && (
             <div className="text-sm text-[#6b5d4a] font-light leading-relaxed">
-              <p className="text-center text-[#8b7a6a] mb-4">
-                식권 안내 내용은 추후 업데이트됩니다.
+              <p className="text-center leading-relaxed">
+                식사권은 축의금 데스크에서 필요한 수량만큼 받으실 수 있습니다. :)
               </p>
             </div>
           )}
