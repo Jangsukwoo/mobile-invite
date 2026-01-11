@@ -350,16 +350,37 @@ export default function Location() {
         {/* 지도 선택 버튼 */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {loc.naverMapUrl && (
-            <LinkButton
-              href={loc.naverMapUrl}
-              label="네이버지도"
-              icon="naver"
-            />
+            <div className="space-y-2">
+              <LinkButton
+                href={loc.naverMapUrl}
+                label="네이버지도"
+                icon="naver"
+              />
+              <p className="text-xs text-[#8b7a6a] text-center leading-relaxed">
+                * 지도 버튼을 누르면 해당 앱/웹으로 이동합니다.
+                <br />
+                * 지도가 보이지 않을 경우 위 버튼을 눌러주세요.
+              </p>
+            </div>
           )}
           {loc.kakaoMapUrl && (
-            <LinkButton href={loc.kakaoMapUrl} label="카카오맵" icon="kakao" />
+            <div className="space-y-2">
+              <LinkButton href={loc.kakaoMapUrl} label="카카오맵" icon="kakao" />
+              <p className="text-xs text-[#8b7a6a] text-center leading-relaxed">
+                * 지도 버튼을 누르면 해당 앱/웹으로 이동합니다.
+                <br />
+                * 지도가 보이지 않을 경우 위 버튼을 눌러주세요.
+              </p>
+            </div>
           )}
-          <LinkButton href={loc.googleMapUrl} label="구글지도" icon="google" />
+          <div className="space-y-2">
+            <LinkButton href={loc.googleMapUrl} label="구글지도" icon="google" />
+            <p className="text-xs text-[#8b7a6a] text-center leading-relaxed">
+              * 지도 버튼을 누르면 해당 앱/웹으로 이동합니다.
+              <br />
+              * 지도가 보이지 않을 경우 위 버튼을 눌러주세요.
+            </p>
+          </div>
         </div>
 
         {/* 교통편 정보 */}
@@ -500,13 +521,6 @@ export default function Location() {
             )}
           </div>
         )}
-
-        <div className="mt-6 text-xs text-[#8b7a6a] leading-relaxed">
-          <p className="mb-1">
-            * 지도 버튼을 누르면 해당 앱/웹으로 이동합니다.
-          </p>
-          <p>* 지도가 보이지 않을 경우 위 버튼을 눌러주세요.</p>
-        </div>
       </div>
     </Section>
   );
