@@ -77,7 +77,7 @@ export default function VisitorCounter() {
   return (
     <div className="text-center py-4">
       <p className="text-xs text-[#8b7a6a] font-light">
-        Today {todayFormatted} · 방문자 {todayVisitors !== null ? todayVisitors.toLocaleString() : "-"}명
+        Today {todayFormatted} · {todayVisitors !== null ? todayVisitors.toLocaleString() : "-"}
       </p>
     </div>
   );
