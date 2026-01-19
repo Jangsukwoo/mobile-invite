@@ -235,15 +235,16 @@ export default function Location() {
         // 정보창 생성
         const infoWindow = new window.google.maps.InfoWindow({
           content: `
-            <div style="padding: 14px 16px; text-align: center; min-width: 220px; max-width: 280px;">
-              <div style="font-weight: 500; color: #5a4a3a; font-size: 15px; margin-bottom: 8px; font-family: 'Noto Serif KR', serif; letter-spacing: -0.02em;">
+            <div style="padding: 2px 10px 6px 10px; text-align: center; min-width: 200px; max-width: 260px; margin: 0;">
+              <div style="font-weight: 500; color: #5a4a3a; font-size: 15px; margin: 0 0 2px 0; padding: 0; font-family: 'Noto Serif KR', serif; letter-spacing: -0.02em;">
                 ${invite.venue}
               </div>
-              <div style="color: #8b7a6a; font-size: 13px; line-height: 1.6; font-family: 'Noto Sans KR', sans-serif; font-weight: 300; letter-spacing: -0.01em;">
+              <div style="color: #8b7a6a; font-size: 13px; line-height: 1.3; margin: 0; padding: 0; font-family: 'Noto Sans KR', sans-serif; font-weight: 300; letter-spacing: -0.01em;">
                 ${loc.address}
               </div>
             </div>
           `,
+          pixelOffset: new window.google.maps.Size(0, -10),
         });
 
         // 마커 클릭 시 정보창 표시

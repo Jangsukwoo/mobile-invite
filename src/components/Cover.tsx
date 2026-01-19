@@ -56,6 +56,14 @@ export default function Cover() {
           {invite.groom} ♥ {invite.bride}
         </h1>
 
+        <div className="mb-4">
+          <p className="text-base text-[#6b5d4a] font-light leading-relaxed">
+            장광용의 아들 장석우
+            <br />
+            박덕영 김정임의 딸 박주영
+          </p>
+        </div>
+
         <div className="w-16 h-px bg-[#d4c4b0] mx-auto"></div>
 
         <p className="text-base text-[#6b5d4a] mt-6 font-light leading-relaxed">

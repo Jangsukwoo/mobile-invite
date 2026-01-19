@@ -58,13 +58,6 @@ export default function Info() {
   return (
     <Section>
       <div className="text-center space-y-6">
-        <div className="mb-4">
-          <p className="text-base text-[#6b5d4a] font-light leading-relaxed">
-            장광용의 아들 장석우
-            <br />
-            박덕영 김정임의 딸 박주영
-          </p>
-        </div>
         <h2
           className="text-2xl font-bold text-[#5a4a3a] tracking-wide"
           style={{ fontFamily: "serif" }}

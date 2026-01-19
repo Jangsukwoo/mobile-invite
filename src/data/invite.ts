@@ -69,14 +69,14 @@ export const invite: Invite = {
   venue: "메종드아나하 그랜드볼룸홀",
 
   location: {
-    address: "서울특별시 강남구 언주로 517 메종드아나하 (신라스테이 역삼 B1층)",
+    address: "서울특별시 강남구 언주로 517 지하 1층 메종드아나하 신라스테이 역삼",
     googleMapUrl: "https://www.google.com/maps/search/메종드아나하",
     kakaoMapUrl: "https://map.kakao.com/?q=메종드아나하",
     naverMapUrl: "https://map.naver.com/v5/search/메종드아나하",
     // 티맵 앱 딥링크 (앱이 설치되어 있으면 앱 열림)
     tmapUrl: "tmap://search?name=메종드아나하",
-    latitude: 37.5017, // 메종드아나하 (신라스테이 호텔 강남 B1) 정확한 좌표
-    longitude: 127.036,
+    latitude: 37.504800, // 서울특별시 강남구 언주로 517 지하 1층 메종드아나하 신라스테이 역삼 정확한 좌표
+    longitude: 127.041253,
     transportation: {
       subway: [
         "2호선/ 수인분당선 선릉역 5번출구 (도보 10분)",

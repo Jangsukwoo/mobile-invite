@@ -4,6 +4,11 @@ import { useState } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
+// 계좌번호를 깔끔하게 포맷팅 (하이픈, ~ 제거, 공백은 유지)
+function formatAccountNumberForDisplay(number: string): string {
+  return number.replace(/[-~]/g, "").trim();
+}
+
 // 계좌번호를 깔끔하게 포맷팅 (공백, 하이픈 제거)
 function formatAccountNumber(number: string): string {
   return number.replace(/[\s-~]/g, "");
@@ -85,14 +90,14 @@ export default function Account() {
                     {acc.bank && acc.number ? (
                       <>
                         <div className="mb-3">
-                          <p className="text-sm text-[#8b7a6a] mb-1">
+                          <p className="text-xl font-semibold text-[#5a4a3a] mb-2">
                             {acc.holder}
                           </p>
                           <p className="text-base font-medium text-[#5a4a3a] mb-1">
                             {acc.bank}
                           </p>
                           <p className="text-lg font-semibold text-[#5a4a3a] tracking-wide">
-                            {acc.number}
+                            {formatAccountNumberForDisplay(acc.number)}
                           </p>
                         </div>
                         <div className="flex justify-end">
