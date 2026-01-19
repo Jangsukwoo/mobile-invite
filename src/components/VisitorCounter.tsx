@@ -1,0 +1,84 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { db } from "@/lib/firebase";
+import { collection, doc, getDoc, setDoc, increment } from "firebase/firestore";
+
+export default function VisitorCounter() {
+  const [todayVisitors, setTodayVisitors] = useState<number | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const trackVisitor = async () => {
+      try {
+        // 오늘 날짜를 YYYY-MM-DD 형식으로 가져오기
+        const today = new Date().toISOString().split("T")[0];
+        
+        // 로컬 스토리지에서 오늘 이미 방문했는지 확인
+        const visitedToday = localStorage.getItem(`visited_${today}`);
+        
+        // 현재 방문자 수 가져오기
+        const visitorRef = doc(db, "visitors", today);
+        const visitorSnap = await getDoc(visitorRef);
+        
+        let currentCount = 0;
+        
+        if (visitorSnap.exists()) {
+          currentCount = visitorSnap.data().count || 0;
+        }
+        
+        // 오늘 처음 방문한 경우에만 카운트 증가
+        if (!visitedToday) {
+          if (visitorSnap.exists()) {
+            await setDoc(visitorRef, {
+              count: increment(1),
+              lastUpdated: new Date().toISOString(),
+            }, { merge: true });
+            currentCount += 1;
+          } else {
+            await setDoc(visitorRef, {
+              count: 1,
+              date: today,
+              lastUpdated: new Date().toISOString(),
+            });
+            currentCount = 1;
+          }
+          
+          // 로컬 스토리지에 오늘 방문 기록 저장
+          localStorage.setItem(`visited_${today}`, "true");
+        }
+        
+        setTodayVisitors(currentCount);
+      } catch (error) {
+        console.error("방문자 수 추적 오류:", error);
+        setTodayVisitors(null);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    trackVisitor();
+  }, []);
+
+  // 오늘 날짜 포맷팅
+  const today = new Date();
+  const todayFormatted = `${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+  if (isLoading) {
+    return (
+      <div className="text-center py-4">
+        <p className="text-xs text-[#8b7a6a] font-light">
+          Today
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="text-center py-4">
+      <p className="text-xs text-[#8b7a6a] font-light">
+        Today {todayFormatted} · 방문자 {todayVisitors !== null ? todayVisitors.toLocaleString() : "-"}명
+      </p>
+    </div>
+  );
+}

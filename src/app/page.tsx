@@ -10,6 +10,7 @@ import Share from "@/components/Share";
 import Guestbook, { EndingMessage } from "@/components/Guestbook";
 import CoverHero from "@/components/CoverHero";
 import MusicPlayer from "@/components/MusicPlayer";
+import VisitorCounter from "@/components/VisitorCounter";
 
 export default function Home() {
   return (
@@ -26,6 +27,7 @@ export default function Home() {
       <Share />
       <Guestbook />
       <EndingMessage />
+      <VisitorCounter />
       <MusicPlayer />
     </main>
   );
