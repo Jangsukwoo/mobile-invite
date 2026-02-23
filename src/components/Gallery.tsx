@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
 export default function Gallery() {
+  const savedScrollY = useRef<number>(0);
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -110,40 +111,45 @@ export default function Gallery() {
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   }
 
-  // 배경 스크롤 잠금 (특정 폰에서 overflow:hidden 미해제 이슈 방지)
+  // 배경 스크롤 잠금 (ref로 저장하여 복원 신뢰성 확보)
   useEffect(() => {
     if (open) {
-      const scrollY = window.scrollY;
+      savedScrollY.current = window.scrollY;
       document.body.style.position = "fixed";
-      document.body.style.top = `-${scrollY}px`;
+      document.body.style.top = `-${savedScrollY.current}px`;
       document.body.style.left = "0";
       document.body.style.right = "0";
+      document.body.style.width = "100%";
       document.body.style.overflow = "hidden";
     } else {
-      const top = document.body.style.top;
-      const scrollY = top ? Math.abs(parseInt(top, 10)) : 0;
+      const y = savedScrollY.current;
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
       document.body.style.right = "";
+      document.body.style.width = "";
       document.body.style.overflow = "";
-      if (scrollY) window.scrollTo(0, scrollY);
+      requestAnimationFrame(() => {
+        window.scrollTo(0, y);
+      });
     }
     return () => {
-      const top = document.body.style.top;
-      const scrollY = top ? Math.abs(parseInt(top, 10)) : 0;
+      const y = savedScrollY.current;
       document.body.style.position = "";
       document.body.style.top = "";
       document.body.style.left = "";
       document.body.style.right = "";
+      document.body.style.width = "";
       document.body.style.overflow = "";
-      if (scrollY) window.scrollTo(0, scrollY);
+      requestAnimationFrame(() => {
+        window.scrollTo(0, y);
+      });
     };
   }, [open]);
 
   return (
     <Section>
-      <div className="text-center space-y-6" style={{ contentVisibility: "auto" }}>
+      <div className="text-center space-y-6">
         <h2 className="text-2xl font-bold text-[#5a4a3a] tracking-wide" style={{ fontFamily: 'serif' }}>
           갤러리
         </h2>
@@ -208,9 +214,10 @@ export default function Gallery() {
             좌우로 스와이프하여 넘길 수 있어요
           </p>
 
-          {/* 이미지 - min-h-0으로 flex 크롭 방지, overflow-auto로 세로 스크롤 가능 */}
+          {/* 이미지 - touch-action: pan-y로 세로 스크롤 허용, 가로는 스와이프 */}
           <div
             className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-auto p-2 overscroll-contain"
+            style={{ touchAction: "pan-y" }}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
