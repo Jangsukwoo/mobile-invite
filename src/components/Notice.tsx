@@ -3,17 +3,17 @@
 import { useState, useEffect } from "react";
 import Section from "./Section";
 
-type NoticeTab = "ATM" | "식권" | "주차" | "기타";
+type NoticeTab = "주차" | "ATM" | "식권" | "기타";
 
 const ATM_IMAGE = "images/atm-guide.PNG";
 const PARKING_IMAGE = "images/parking-guide.PNG";
 
 export default function Notice() {
-  const [activeTab, setActiveTab] = useState<NoticeTab>("ATM");
+  const [activeTab, setActiveTab] = useState<NoticeTab>("주차");
   const [atmImageSrc, setAtmImageSrc] = useState(ATM_IMAGE);
   const [parkingImageSrc, setParkingImageSrc] = useState(PARKING_IMAGE);
 
-  const tabs: NoticeTab[] = ["ATM", "식권", "주차", "기타"];
+  const tabs: NoticeTab[] = ["주차", "ATM", "식권", "기타"];
 
   useEffect(() => {
     if (typeof window === "undefined") return;

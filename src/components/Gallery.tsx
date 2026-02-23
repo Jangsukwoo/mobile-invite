@@ -1,10 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
 export default function Gallery() {
+  const savedScrollY = useRef(0);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -53,33 +55,28 @@ export default function Gallery() {
   const [prevIndex, setPrevIndex] = useState(0);
   const [direction, setDirection] = useState<"left" | "right">("right");
   const [isTransitioning, setIsTransitioning] = useState(false);
-  const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
-  const SWIPE_THRESHOLD = 50; // px
-  const TRANSITION_DURATION = 400; // ms
+  const SWIPE_THRESHOLD = 50;
+  const TRANSITION_DURATION = 350;
 
   function onTouchStart(e: React.TouchEvent) {
-    setTouchEndX(null);
-    setTouchStartX(e.targetTouches[0].clientX);
+    touchStartRef.current = {
+      x: e.targetTouches[0].clientX,
+      y: e.targetTouches[0].clientY,
+    };
   }
 
-  function onTouchMove(e: React.TouchEvent) {
-    setTouchEndX(e.targetTouches[0].clientX);
-  }
+  function onTouchEnd(e: React.TouchEvent) {
+    if (!touchStartRef.current || isTransitioning) return;
+    const endX = e.changedTouches[0].clientX;
+    const endY = e.changedTouches[0].clientY;
+    const deltaX = touchStartRef.current.x - endX;
+    const deltaY = touchStartRef.current.y - endY;
+    touchStartRef.current = null;
 
-  function onTouchEnd() {
-    if (touchStartX === null || touchEndX === null) return;
-    if (isTransitioning) return; // 전환 중이면 무시
-
-    const delta = touchStartX - touchEndX;
-
-    if (delta > SWIPE_THRESHOLD) {
-      // 왼쪽으로 스와이프 → 다음
-      next();
-    } else if (delta < -SWIPE_THRESHOLD) {
-      // 오른쪽으로 스와이프 → 이전
-      prev();
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > SWIPE_THRESHOLD) {
+      if (deltaX > 0) next();
+      else prev();
     }
   }
 
@@ -109,6 +106,33 @@ export default function Gallery() {
     setIndex((i) => (i === images.length - 1 ? 0 : i + 1));
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   }
+
+  useEffect(() => {
+    if (open) {
+      savedScrollY.current = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${savedScrollY.current}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
+      document.body.style.overflow = "hidden";
+    } else {
+      const y = savedScrollY.current;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      requestAnimationFrame(() => window.scrollTo(0, y));
+    }
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
+      document.body.style.overflow = "";
+      requestAnimationFrame(() => window.scrollTo(0, savedScrollY.current));
+    };
+  }, [open]);
 
   return (
     <Section>
@@ -160,11 +184,11 @@ export default function Gallery() {
             </button>
           </div>
 
-          {/* 이미지 영역: 화면에 꽉 맞게 표시 (스크롤 없음) */}
+          {/* 이미지 영역: 풀화면, 가로 스와이프만 처리 (세로 스크롤 방지) */}
           <div
-            className="flex-1 min-h-0 flex items-center justify-center p-2 overflow-hidden"
+            className="flex-1 min-h-0 flex items-center justify-center p-2 overflow-hidden select-none"
+            style={{ touchAction: "pan-x" }}
             onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
           >
             {/* 이전 이미지 (페이드 아웃) */}
@@ -175,7 +199,7 @@ export default function Gallery() {
                 alt={`viewer-prev-${prevIndex}`}
                 className="absolute max-w-full max-h-full w-auto h-auto object-contain"
                 style={{
-                  animation: `fadeOut${direction === "right" ? "Left" : "Right"} ${TRANSITION_DURATION}ms ease-in-out`,
+                  animation: `fadeOut${direction === "right" ? "Left" : "Right"} ${TRANSITION_DURATION}ms cubic-bezier(0.25, 0.1, 0.25, 1)`,
                 }}
               />
             )}
@@ -187,7 +211,7 @@ export default function Gallery() {
               loading="eager"
               decoding="async"
               style={{
-                animation: `fadeInSlide${direction === "right" ? "Right" : "Left"} ${TRANSITION_DURATION}ms ease-in-out`,
+                animation: `fadeInSlide${direction === "right" ? "Right" : "Left"} ${TRANSITION_DURATION}ms cubic-bezier(0.25, 0.1, 0.25, 1)`,
               }}
               draggable={false}
             />
