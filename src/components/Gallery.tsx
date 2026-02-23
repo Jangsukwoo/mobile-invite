@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
 export default function Gallery() {
-  const savedScrollY = useRef<number>(0);
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -110,42 +109,6 @@ export default function Gallery() {
     setIndex((i) => (i === images.length - 1 ? 0 : i + 1));
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   }
-
-  // 배경 스크롤 잠금 (ref로 저장하여 복원 신뢰성 확보)
-  useEffect(() => {
-    if (open) {
-      savedScrollY.current = window.scrollY;
-      document.body.style.position = "fixed";
-      document.body.style.top = `-${savedScrollY.current}px`;
-      document.body.style.left = "0";
-      document.body.style.right = "0";
-      document.body.style.width = "100%";
-      document.body.style.overflow = "hidden";
-    } else {
-      const y = savedScrollY.current;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-      requestAnimationFrame(() => {
-        window.scrollTo(0, y);
-      });
-    }
-    return () => {
-      const y = savedScrollY.current;
-      document.body.style.position = "";
-      document.body.style.top = "";
-      document.body.style.left = "";
-      document.body.style.right = "";
-      document.body.style.width = "";
-      document.body.style.overflow = "";
-      requestAnimationFrame(() => {
-        window.scrollTo(0, y);
-      });
-    };
-  }, [open]);
 
   return (
     <Section>
