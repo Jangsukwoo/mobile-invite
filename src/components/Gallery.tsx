@@ -1,11 +1,10 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
 export default function Gallery() {
-  const scrollRef = useRef<HTMLDivElement>(null);
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -111,18 +110,6 @@ export default function Gallery() {
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   }
 
-  function scrollImageUp() {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ top: -window.innerHeight * 0.8, behavior: "smooth" });
-    }
-  }
-
-  function scrollImageDown() {
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({ top: window.innerHeight * 0.8, behavior: "smooth" });
-    }
-  }
-
   return (
     <Section>
       <div className="text-center space-y-6">
@@ -153,66 +140,29 @@ export default function Gallery() {
         </div>
       </div>
 
-      {/* 라이트박스 - 모바일 viewport 이슈 방지 (100dvh), 사진 잘림 방지 */}
+      {/* 라이트박스 - 이미지 화면에 꽉 맞게 (스크롤 불필요), 닫기 버튼 항상 보이게 */}
       {open && (
         <div
-          className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center"
+          className="fixed inset-0 z-50 bg-black flex flex-col"
           style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
         >
-          {/* 닫기 */}
-          <button
-            onClick={closeViewer}
-            className="absolute top-4 right-4 z-10 text-white text-2xl"
-            aria-label="close"
-          >
-            ✕
-          </button>
-
-          {/* 이전 */}
-          <button
-            onClick={prev}
-            className="absolute left-2 z-10 text-white text-3xl px-2"
-            aria-label="prev"
-          >
-            ‹
-          </button>
-
-          {/* 다음 */}
-          <button
-            onClick={next}
-            className="absolute right-2 z-10 text-white text-3xl px-2"
-            aria-label="next"
-          >
-            ›
-          </button>
-
-          <p className="absolute bottom-5 z-10 text-white text-xs opacity-70 whitespace-nowrap px-4">
-            좌우 스와이프로 넘기기 · 세로 스크롤 또는 ↑↓로 이동
-          </p>
-
-          {/* 세로 스크롤 버튼 (모바일 터치 스크롤 대안) */}
-          <button
-            type="button"
-            onClick={scrollImageUp}
-            className="absolute left-1/2 -translate-x-1/2 top-16 z-10 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center text-xl active:bg-black/70"
-            aria-label="위로 스크롤"
-          >
-            ↑
-          </button>
-          <button
-            type="button"
-            onClick={scrollImageDown}
-            className="absolute left-1/2 -translate-x-1/2 bottom-14 z-10 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center text-xl active:bg-black/70"
-            aria-label="아래로 스크롤"
-          >
-            ↓
-          </button>
-
-          {/* 이미지 - iOS 모멘텀 스크롤 + 세로 스크롤 허용 */}
+          {/* 상단 바: 닫기 버튼 항상 보이게 (safe-area) */}
           <div
-            ref={scrollRef}
-            className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-auto p-2 overscroll-contain"
-            style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
+            className="shrink-0 flex justify-end items-center px-4 py-3"
+            style={{ paddingTop: "max(0.75rem, env(safe-area-inset-top))" }}
+          >
+            <button
+              onClick={closeViewer}
+              className="w-12 h-12 flex items-center justify-center text-white text-2xl rounded-full active:bg-white/20"
+              aria-label="close"
+            >
+              ✕
+            </button>
+          </div>
+
+          {/* 이미지 영역: 화면에 꽉 맞게 표시 (스크롤 없음) */}
+          <div
+            className="flex-1 min-h-0 flex items-center justify-center p-2 overflow-hidden"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -229,7 +179,6 @@ export default function Gallery() {
                 }}
               />
             )}
-            {/* 새 이미지 (페이드 인 + 슬라이드) - object-contain으로 잘림 방지 */}
             <img
               key={`current-${index}`}
               src={images[index]}
@@ -242,6 +191,28 @@ export default function Gallery() {
               }}
               draggable={false}
             />
+          </div>
+
+          {/* 하단 바: 이전/다음 + 안내 */}
+          <div
+            className="shrink-0 flex items-center justify-between px-4 py-4"
+            style={{ paddingBottom: "max(1rem, env(safe-area-inset-bottom))" }}
+          >
+            <button
+              onClick={prev}
+              className="w-12 h-12 flex items-center justify-center text-white text-3xl active:bg-white/20 rounded-full"
+              aria-label="prev"
+            >
+              ‹
+            </button>
+            <span className="text-white text-xs opacity-70">좌우 스와이프로 넘기기</span>
+            <button
+              onClick={next}
+              className="w-12 h-12 flex items-center justify-center text-white text-3xl active:bg-white/20 rounded-full"
+              aria-label="next"
+            >
+              ›
+            </button>
           </div>
         </div>
       )}
