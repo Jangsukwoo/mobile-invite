@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
@@ -164,12 +165,22 @@ export default function Gallery() {
         </div>
       </div>
 
-      {/* 라이트박스 - 이미지 화면에 꽉 맞게 (스크롤 불필요), 닫기 버튼 항상 보이게 */}
-      {open && (
-        <div
-          className="fixed inset-0 z-50 bg-black flex flex-col"
-          style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
-        >
+      {/* 라이트박스 - document.body에 포탈로 렌더하여 다른 요소 위에 확실히 덮음 */}
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            className="fixed inset-0 bg-black flex flex-col"
+            style={{
+              zIndex: 99999,
+              height: "100dvh",
+              minHeight: "-webkit-fill-available",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+            }}
+          >
           {/* 상단 바: 닫기 버튼 항상 보이게 (safe-area) */}
           <div
             className="shrink-0 flex justify-end items-center px-4 py-3"
@@ -238,8 +249,9 @@ export default function Gallery() {
               ›
             </button>
           </div>
-        </div>
-      )}
+        </div>,
+          document.body
+        )}
     </Section>
   );
 }
