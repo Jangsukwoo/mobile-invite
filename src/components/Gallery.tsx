@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
 export default function Gallery() {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [images, setImages] = useState<string[]>([]);
 
   useEffect(() => {
@@ -110,6 +111,18 @@ export default function Gallery() {
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   }
 
+  function scrollImageUp() {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ top: -window.innerHeight * 0.8, behavior: "smooth" });
+    }
+  }
+
+  function scrollImageDown() {
+    if (scrollRef.current) {
+      scrollRef.current.scrollBy({ top: window.innerHeight * 0.8, behavior: "smooth" });
+    }
+  }
+
   return (
     <Section>
       <div className="text-center space-y-6">
@@ -174,13 +187,32 @@ export default function Gallery() {
           </button>
 
           <p className="absolute bottom-5 z-10 text-white text-xs opacity-70 whitespace-nowrap px-4">
-            좌우로 스와이프하여 넘길 수 있어요
+            좌우 스와이프로 넘기기 · 세로 스크롤 또는 ↑↓로 이동
           </p>
 
-          {/* 이미지 - touch-action: pan-y로 세로 스크롤 허용, 가로는 스와이프 */}
+          {/* 세로 스크롤 버튼 (모바일 터치 스크롤 대안) */}
+          <button
+            type="button"
+            onClick={scrollImageUp}
+            className="absolute left-1/2 -translate-x-1/2 top-16 z-10 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center text-xl active:bg-black/70"
+            aria-label="위로 스크롤"
+          >
+            ↑
+          </button>
+          <button
+            type="button"
+            onClick={scrollImageDown}
+            className="absolute left-1/2 -translate-x-1/2 bottom-14 z-10 w-12 h-12 rounded-full bg-black/50 text-white flex items-center justify-center text-xl active:bg-black/70"
+            aria-label="아래로 스크롤"
+          >
+            ↓
+          </button>
+
+          {/* 이미지 - iOS 모멘텀 스크롤 + 세로 스크롤 허용 */}
           <div
+            ref={scrollRef}
             className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-auto p-2 overscroll-contain"
-            style={{ touchAction: "pan-y" }}
+            style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" }}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
