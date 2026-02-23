@@ -1,14 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Section from "./Section";
 
-type NoticeTab = "식권" | "주차" | "기타";
+type NoticeTab = "ATM" | "식권" | "주차" | "기타";
+
+const ATM_IMAGE = "images/atm-guide.PNG";
+const PARKING_IMAGE = "images/parking-guide.PNG";
 
 export default function Notice() {
-  const [activeTab, setActiveTab] = useState<NoticeTab>("식권");
+  const [activeTab, setActiveTab] = useState<NoticeTab>("ATM");
+  const [atmImageSrc, setAtmImageSrc] = useState(ATM_IMAGE);
+  const [parkingImageSrc, setParkingImageSrc] = useState(PARKING_IMAGE);
 
-  const tabs: NoticeTab[] = ["식권", "주차", "기타"];
+  const tabs: NoticeTab[] = ["ATM", "식권", "주차", "기타"];
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hostname = window.location.hostname;
+    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "0.0.0.0";
+    const base = isLocalhost ? "" : "/mobile-invite";
+    setAtmImageSrc(base ? `${base}/${ATM_IMAGE}` : `/${ATM_IMAGE}`);
+    setParkingImageSrc(base ? `${base}/${PARKING_IMAGE}` : `/${PARKING_IMAGE}`);
+  }, []);
 
   return (
     <Section>
@@ -47,6 +61,24 @@ export default function Notice() {
 
         {/* 탭 내용 */}
         <div className="min-h-[200px] text-left pt-6">
+          {activeTab === "ATM" && (
+            <div className="text-sm text-[#6b5d4a] font-light leading-relaxed space-y-4">
+              <p className="text-center leading-relaxed">
+                ATM기기는 접수대 통로 끝 쪽에 준비되어 있습니다.
+              </p>
+              <p className="text-center leading-relaxed text-[#8b7a6a]">
+                또는, 1층 세븐일레븐 내에 ATM기기를 이용하실 수 있습니다
+              </p>
+              <div className="rounded-xl overflow-hidden border border-[#e8e3d8]">
+                <img
+                  src={atmImageSrc}
+                  alt="ATM 안내 사진"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
+            </div>
+          )}
+
           {activeTab === "식권" && (
             <div className="text-sm text-[#6b5d4a] font-light leading-relaxed">
               <p className="text-center leading-relaxed">
@@ -56,10 +88,20 @@ export default function Notice() {
           )}
 
           {activeTab === "주차" && (
-            <div className="text-sm text-[#6b5d4a] font-light leading-relaxed">
-              <p className="text-center text-[#8b7a6a] mb-4">
-                주차 안내 내용은 추후 업데이트됩니다.
+            <div className="text-sm text-[#6b5d4a] font-light leading-relaxed space-y-4">
+              <p className="text-center leading-relaxed">
+                연회장 입구 안내데스크에서 2시간 등록해드립니다.
               </p>
+              <p className="text-center leading-relaxed">
+                주차장은 지하 2층부터 지하 5층이며 2시간 초과시 10분당 1,000원이 부과됩니다.
+              </p>
+              <div className="rounded-xl overflow-hidden border border-[#e8e3d8]">
+                <img
+                  src={parkingImageSrc}
+                  alt="주차 안내 사진"
+                  className="w-full h-auto object-cover"
+                />
+              </div>
             </div>
           )}
 

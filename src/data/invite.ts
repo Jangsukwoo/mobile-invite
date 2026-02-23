@@ -101,16 +101,16 @@ export const invite: Invite = {
     {
       group: "신랑측",
       items: [
-        { bank: "하나은행", number: "177-910539-09607", holder: "[신랑] 장석우" },
-        { bank: "국민은행", number: "843 21 0470 602", holder: "[아버지] 장광용" },
+        { bank: "하나은행", number: "17791053909607", holder: "[신랑] 장석우" },
+        { bank: "국민은행", number: "843210470602", holder: "[아버지] 장광용" },
       ],
     },
     {
       group: "신부측",
       items: [
         { bank: "카카오뱅크", number: "3333105871789", holder: "[신부] 박주영" },
-        { bank: "한국산업은행", number: "020 0404 2636 312", holder: "[아버지] 박덕영" },
-        { bank: "농협", number: "241020~52~091125", holder: "[어머니] 김정임" },
+        { bank: "한국산업은행", number: "02004042636312", holder: "[아버지] 박덕영" },
+        { bank: "농협", number: "24102052091125", holder: "[어머니] 김정임" },
       ],
     },
   ],
@@ -144,6 +144,9 @@ export const invite: Invite = {
     "images/9.jpg",
     "images/10.jpg",
     "images/11.jpg",
+    "images/12.jpg",
+    "images/13.jpg",
+    "images/14.jpg",
   ],
 
   music: {

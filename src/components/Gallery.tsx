@@ -37,13 +37,14 @@ export default function Gallery() {
 
     setImages(processedImages);
 
-    // 첫 6개 이미지 preload (갤러리 섹션이 보이기 전에 미리 로드)
-    const preloadImages = processedImages.slice(0, 6);
+    // 첫 2개만 preload (과한 preload가 스크롤 멈춤 원인)
+    const preloadImages = processedImages.slice(0, 2);
     preloadImages.forEach((src) => {
       const link = document.createElement("link");
       link.rel = "preload";
       link.as = "image";
       link.href = src;
+      link.setAttribute("fetchpriority", "high");
       document.head.appendChild(link);
     });
   }, []);
@@ -109,21 +110,40 @@ export default function Gallery() {
     setTimeout(() => setIsTransitioning(false), TRANSITION_DURATION);
   }
 
-  // 배경 스크롤 잠금
+  // 배경 스크롤 잠금 (특정 폰에서 overflow:hidden 미해제 이슈 방지)
   useEffect(() => {
     if (open) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.left = "0";
+      document.body.style.right = "0";
       document.body.style.overflow = "hidden";
     } else {
+      const top = document.body.style.top;
+      const scrollY = top ? Math.abs(parseInt(top, 10)) : 0;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
+      if (scrollY) window.scrollTo(0, scrollY);
     }
     return () => {
+      const top = document.body.style.top;
+      const scrollY = top ? Math.abs(parseInt(top, 10)) : 0;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.left = "";
+      document.body.style.right = "";
       document.body.style.overflow = "";
+      if (scrollY) window.scrollTo(0, scrollY);
     };
   }, [open]);
 
   return (
     <Section>
-      <div className="text-center space-y-6">
+      <div className="text-center space-y-6" style={{ contentVisibility: "auto" }}>
         <h2 className="text-2xl font-bold text-[#5a4a3a] tracking-wide" style={{ fontFamily: 'serif' }}>
           갤러리
         </h2>
@@ -141,8 +161,8 @@ export default function Gallery() {
               <img
                 src={src}
                 alt={`gallery-${i}`}
-                loading={i < 6 ? "eager" : "lazy"}
-                fetchPriority={i < 3 ? "high" : "auto"}
+                loading={i < 4 ? "eager" : "lazy"}
+                fetchPriority={i < 2 ? "high" : "low"}
                 className="w-full h-full object-cover"
                 decoding="async"
               />
@@ -151,13 +171,16 @@ export default function Gallery() {
         </div>
       </div>
 
-      {/* 라이트박스 */}
+      {/* 라이트박스 - 모바일 viewport 이슈 방지 (100dvh), 사진 잘림 방지 */}
       {open && (
-        <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+        <div
+          className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center"
+          style={{ height: "100dvh", minHeight: "-webkit-fill-available" }}
+        >
           {/* 닫기 */}
           <button
             onClick={closeViewer}
-            className="absolute top-4 right-4 text-white text-2xl"
+            className="absolute top-4 right-4 z-10 text-white text-2xl"
             aria-label="close"
           >
             ✕
@@ -166,7 +189,7 @@ export default function Gallery() {
           {/* 이전 */}
           <button
             onClick={prev}
-            className="absolute left-2 text-white text-3xl px-2"
+            className="absolute left-2 z-10 text-white text-3xl px-2"
             aria-label="prev"
           >
             ‹
@@ -175,19 +198,19 @@ export default function Gallery() {
           {/* 다음 */}
           <button
             onClick={next}
-            className="absolute right-2 text-white text-3xl px-2"
+            className="absolute right-2 z-10 text-white text-3xl px-2"
             aria-label="next"
           >
             ›
           </button>
 
-          <p className="absolute bottom-5 text-white text-xs opacity-70 whitespace-nowrap px-4">
+          <p className="absolute bottom-5 z-10 text-white text-xs opacity-70 whitespace-nowrap px-4">
             좌우로 스와이프하여 넘길 수 있어요
           </p>
 
-          {/* 이미지 */}
+          {/* 이미지 - min-h-0으로 flex 크롭 방지, overflow-auto로 세로 스크롤 가능 */}
           <div
-            className="relative max-w-full max-h-full flex items-center justify-center overflow-hidden"
+            className="relative w-full flex-1 min-h-0 flex items-center justify-center overflow-auto p-2 overscroll-contain"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
@@ -198,23 +221,24 @@ export default function Gallery() {
                 key={`prev-${prevIndex}`}
                 src={images[prevIndex]}
                 alt={`viewer-prev-${prevIndex}`}
-                className="absolute max-w-full max-h-full object-contain"
+                className="absolute max-w-full max-h-full w-auto h-auto object-contain"
                 style={{
                   animation: `fadeOut${direction === "right" ? "Left" : "Right"} ${TRANSITION_DURATION}ms ease-in-out`,
                 }}
               />
             )}
-            {/* 새 이미지 (페이드 인 + 슬라이드) */}
+            {/* 새 이미지 (페이드 인 + 슬라이드) - object-contain으로 잘림 방지 */}
             <img
               key={`current-${index}`}
               src={images[index]}
               alt={`viewer-${index}`}
-              className="max-w-full max-h-full object-contain"
+              className="max-w-full max-h-full w-auto h-auto object-contain"
               loading="eager"
               decoding="async"
               style={{
                 animation: `fadeInSlide${direction === "right" ? "Right" : "Left"} ${TRANSITION_DURATION}ms ease-in-out`,
               }}
+              draggable={false}
             />
           </div>
         </div>

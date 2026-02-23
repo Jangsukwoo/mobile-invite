@@ -4,9 +4,9 @@ import { useState } from "react";
 import Section from "./Section";
 import { invite } from "@/data/invite";
 
-// 계좌번호를 깔끔하게 포맷팅 (하이픈, ~ 제거, 공백은 유지)
+// 계좌번호를 깔끔하게 포맷팅 (띄어쓰기, 하이픈, ~ 모두 제거하여 붙여서 표시)
 function formatAccountNumberForDisplay(number: string): string {
-  return number.replace(/[-~]/g, "").trim();
+  return number.replace(/[\s\-~]/g, "");
 }
 
 // 계좌번호를 깔끔하게 포맷팅 (공백, 하이픈 제거)
@@ -90,7 +90,10 @@ export default function Account() {
                     {acc.bank && acc.number ? (
                       <>
                         <div className="mb-3">
-                          <p className="text-xl font-semibold text-[#5a4a3a] mb-2">
+                          <p
+                            className="text-lg font-bold text-[#5a4a3a] mb-2 tracking-[-0.02em]"
+                            style={{ fontFamily: "Pretendard, var(--font-noto-sans-kr), -apple-system, sans-serif" }}
+                          >
                             {acc.holder}
                           </p>
                           <p className="text-base font-medium text-[#5a4a3a] mb-1">
